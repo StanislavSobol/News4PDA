@@ -13,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,6 +35,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Logger.write("MainActivity");
+
+        Parser4PDA parser4PDA = new Parser4PDA();
+
     }
 
     @Override
