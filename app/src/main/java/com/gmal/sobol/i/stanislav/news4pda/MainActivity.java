@@ -64,12 +64,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     void showDetailedNew(NewsItemDTO.Item item) {
+        Intent intent = new Intent(MainActivity.this, DetailedNewScrollingActivity.class);
+        intent.putExtra("url", item.getDetailURL());
+        startActivity(intent);
+
+        /*
+
+
         CallbackBundle callbackBundle = new CallbackBundle();
 
         callbackBundle.setResult(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(MainActivity.this, DetailedNewActivity.class));
+                startActivity(new Intent(MainActivity.this, DetailedNewScrollingActivity.class));
             }
         });
 
@@ -81,6 +88,8 @@ public class MainActivity extends AppCompatActivity
         });
 
         parser4PDA.parseDetailedNew(item.getDetailURL(), callbackBundle);
+
+        */
     }
 
     private void initGraphics() {

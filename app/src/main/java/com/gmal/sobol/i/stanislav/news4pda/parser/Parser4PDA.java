@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.RejectedExecutionException;
 
 public class Parser4PDA implements Parser4PDAViewable {
+
     public Parser4PDA() {
     }
 
@@ -127,8 +128,6 @@ public class Parser4PDA implements Parser4PDAViewable {
         for (Element p : ps) {
             DetailedNewDTO.ContentItem contentItem = new DetailedNewDTO.ContentItem();
 
-
-            // test
             if (p.attr("style").equals("text-align: justify;")) {
                 contentItem.isImage = false;
                 contentItem.content = p.text();

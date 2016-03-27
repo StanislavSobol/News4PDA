@@ -25,8 +25,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailedNewActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
+            android:name=".DetailedNewScrollingActivity"
+            android:label="@string/title_activity_detailed_new_scrolling"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
