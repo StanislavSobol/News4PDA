@@ -1,47 +1,32 @@
 package com.gmal.sobol.i.stanislav.news4pda;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
+import com.gmal.sobol.i.stanislav.news4pda.parser.NewsItemDTO;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManager;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerViewable;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static MainActivity getInstance() {
-        return instance;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
         setContentView(R.layout.activity_main);
         initGraphics();
-
-        sqLiteManagerViewable = new SQLiteManager(this);
-
         parser4PDA.clearData();
         loadPage(1);
-    }
-
-    @Override
-    protected void onDestroy() {
-        instance = null;
-        super.onDestroy();
     }
 
     @Override
@@ -64,19 +49,38 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    void checkForNextPage(int position) {
+        if (position + 1 >= parser4PDA.getParsedNewsData().size()) {
+            loadPage(++currentPageNumber);
+            Logger.write("page currentPageNumber");
+        }
+    }
+
+    void showDetailedNew(NewsItemDTO.Item item) {
+        CallbackBundle callbackBundle = new CallbackBundle();
+
+        callbackBundle.setResult(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(MainActivity.this, DetailedNewActivity.class));
+            }
+        });
+
+        callbackBundle.setError(new Runnable() {
+            @Override
+            public void run() {
+                // TODO notify about the error
+            }
+        });
+
+        parser4PDA.parseDetailedNew(item.getDetailURL(), callbackBundle);
     }
 
     private void initGraphics() {
@@ -112,9 +116,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 if (recyclerView.getAdapter() == null) {
-                    recyclerView.setAdapter(new NewsListAdapter(parser4PDA.getParsedData()));
+                    recyclerView.setAdapter(new NewsListAdapter(parser4PDA.getParsedNewsData(), MainActivity.this));
                 } else {
-                    ((NewsListAdapter)recyclerView.getAdapter()).addNews(parser4PDA.getParsedData());
+                    ((NewsListAdapter) recyclerView.getAdapter()).addNews(parser4PDA.getParsedNewsData());
                 }
                 fullProgressBar.setVisibility(View.GONE);
                 recyclerProgressBar.setVisibility(View.GONE);
@@ -129,21 +133,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        parser4PDA.parsePage(number, callbackBundle);
+        parser4PDA.parseNewsPage(number, callbackBundle);
     }
 
-    public void checkForNextPage(int position) {
-        if (position + 1 >= parser4PDA.getParsedData().size()) {
-            loadPage(++currentPageNumber);
-            Logger.write("page currentPageNumber");
-        }
-    }
-
-    SQLiteManagerViewable sqLiteManagerViewable;
-
-    private static MainActivity instance;
-
-    private Parser4PDAViewable parser4PDA = new Parser4PDA();
+    private Parser4PDAViewable parser4PDA = News4PDAApplication.getParser4PDA();
     private RecyclerView recyclerView;
     private ProgressBar fullProgressBar;
     private ProgressBar recyclerProgressBar;

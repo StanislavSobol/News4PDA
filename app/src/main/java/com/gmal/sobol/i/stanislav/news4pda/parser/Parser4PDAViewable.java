@@ -4,6 +4,7 @@ import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
 
 public interface Parser4PDAViewable {
     void clearData();
-    void parsePage(int number, CallbackBundle callbackBundle);
-    NewsItemDTO getParsedData();
+    void parseNewsPage(int number, CallbackBundle callbackBundle);
+    NewsItemDTO getParsedNewsData();
+    void parseDetailedNew(String url, CallbackBundle callbackBundle);
 }

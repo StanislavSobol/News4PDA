@@ -1,5 +1,6 @@
 package com.gmal.sobol.i.stanislav.news4pda;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -19,7 +20,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
-    public DownloadImageTask(ImageView imageView, boolean usePool, Runnable finalRunnable) {
+    public DownloadImageTask(Context context, ImageView imageView, boolean usePool, Runnable finalRunnable) {
         for (DownloadImageTask task : currentTasks) {
             if (task.imageView == imageView) {
                 task.cancel(true);
@@ -27,16 +28,14 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
             }
         }
 
-        bitmap = null;
-
         this.imageView = imageView;
         this.usePool = usePool;
         this.finalRunnable = finalRunnable;
 
-        if (imageView != null) {
+        if (imageView != null ) {
             ViewParent viewParent = imageView.getParent();
             if (viewParent != null && viewParent instanceof FrameLayout) {
-                progressBar = new ProgressBar(MainActivity.getInstance());
+                progressBar = new ProgressBar(context);
                 progressBar.setMinimumWidth(imageView.getWidth());
                 progressBar.setMinimumHeight(imageView.getHeight());
 
@@ -55,7 +54,7 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         currentTasks.add(this);
 
         if (usePool) {
-            bitmap = MainActivity.getInstance().sqLiteManagerViewable.getBitmapFromPoolByURL(url);
+            bitmap = News4PDAApplication.getSqLiteManagerViewable().getBitmapFromPoolByURL(url);
             if (bitmap != null) {
                 onPostExecute(bitmap);
                 return;
@@ -95,7 +94,7 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
             InputStream in = new java.net.URL(url).openStream();
             bitmap = BitmapFactory.decodeStream(in);
             if (usePool) {
-                MainActivity.getInstance().sqLiteManagerViewable.setBitmapToPool(url, bitmap);
+                News4PDAApplication.getSqLiteManagerViewable().setBitmapToPool(url, bitmap);
             }
         } catch (Exception e) {
             e.printStackTrace();

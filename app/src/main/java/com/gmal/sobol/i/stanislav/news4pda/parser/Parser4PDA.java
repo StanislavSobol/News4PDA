@@ -22,19 +22,23 @@ public class Parser4PDA implements Parser4PDAViewable {
         news.clear();
     }
 
-    public void parsePage(int number, CallbackBundle callbackBundle) {
-        new ParsePageTask(callbackBundle).safeExecute("http://4pda.ru/news/page/" + number + "/");
+    public void parseNewsPage(int number, CallbackBundle callbackBundle) {
+        new ParsePageTask(callbackBundle, true).safeExecute("http://4pda.ru/news/page/" + number + "/");
     }
 
-    @Override
-    public NewsItemDTO getParsedData() {
+    public NewsItemDTO getParsedNewsData() {
         return news;
+    }
+
+    public void parseDetailedNew(String url, CallbackBundle callbackBundle) {
+        new ParsePageTask(callbackBundle, false).safeExecute(url);
     }
 
     private class ParsePageTask extends AsyncTask<String, Void, Document> {
 
-        public ParsePageTask(CallbackBundle callbackBundle) {
+        public ParsePageTask(CallbackBundle callbackBundle, boolean isNewsPage) {
             this.callbackBundle = callbackBundle;
+            this.isNewsPage = isNewsPage;
         }
 
         protected void safeExecute(String url) {
@@ -63,7 +67,11 @@ public class Parser4PDA implements Parser4PDAViewable {
                 e.printStackTrace();
                 return null;
             }
-            parseDocument(document);
+            if (isNewsPage) {
+                parsePageDocument(document);
+            } else {
+                parseDetailedNewDocument(document);
+            }
             return document;
         }
 
@@ -80,9 +88,10 @@ public class Parser4PDA implements Parser4PDAViewable {
         }
 
         private CallbackBundle callbackBundle;
+        private boolean isNewsPage;
     }
 
-    synchronized private void parseDocument(Document document) {
+    synchronized private void parsePageDocument(Document document) {
         Elements articles = document.getElementsByTag("article");
         for (Element article : articles) {
             if (!article.className().equals("post")) {
@@ -96,12 +105,13 @@ public class Parser4PDA implements Parser4PDAViewable {
             item.description = article.getElementsByTag("p").get(0).text();
             item.imageURL = article.getElementsByTag("img").get(0).attr("src");
             news.add(item);
-
-            Logger.write(" title = " + item.title );
         }
-
-        Logger.write("Parser4PDA parseDocument ends");
     }
+
+    synchronized private void parseDetailedNewDocument(Document document) {
+        Logger.write(document.title());
+    }
+
 
     private NewsItemDTO news = new NewsItemDTO();
 }

@@ -11,6 +11,8 @@ import com.gmal.sobol.i.stanislav.news4pda.parser.NewsItemDTO;
 
 public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
+    private MainActivity mainActivity;
+
     public static class Holder extends RecyclerView.ViewHolder {
 
         public Holder(View itemView) {
@@ -25,7 +27,8 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
         private ImageView imageView;
     }
 
-    public NewsListAdapter(NewsItemDTO news) {
+    public NewsListAdapter(NewsItemDTO news, MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
         this.news = new NewsItemDTO();
         this.news.addAll(news);
     }
@@ -38,16 +41,26 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, int position) {
-        NewsItemDTO.Item item = news.get(position);
+    public void onBindViewHolder(Holder holder, final int position) {
+        final NewsItemDTO.Item item = news.get(position);
         if (item != null) {
 
             holder.titleTextVew.setText(item.getTitle());
             holder.descriptionTextView.setText(item.getDescription());
 
-            new DownloadImageTask(holder.imageView, true, null).safeExecute(item.getImageURL());
+            new DownloadImageTask(mainActivity, holder.imageView, true, null).safeExecute(item.getImageURL());
+
+//            holder.itemView.setTag(item.getHistoryTag());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setSelected(true);
+                    notifyItemChanged(position);
+                    mainActivity.showDetailedNew(item);
+                }
+            });
         }
-        MainActivity.getInstance().checkForNextPage(position);
+        mainActivity.checkForNextPage(position);
     }
 
     @Override

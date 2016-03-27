@@ -1,34 +1,26 @@
 package com.gmal.sobol.i.stanislav.news4pda;
 
-/*
-*
-* Тестовое задание по Android
-
-Необходимо реализовать читалку новостей для сайта 4PDA (http://4pda.ru/).
-
-Функции (все реализовывать не обязательно, можно выбрать понравившиеся):
-
-1. Вывод списка новостей.
-2. Отображение одной выбранной новости.
-3. Альбомный режим с двумя панелями: список новостей и выбранная новость.
-4. Отображение картинок к новостям.
-5. Подгрузка новостей при скроле.
-6. Обновление списка через pull-to-refresh.
-7. Кеширование новостей для оффлайн-просмотра.
-8. Вывод новостей по категориям.
-9. Комментарии к новости.
-
-.Для получения новостей с сайта можно обратиться к RSS-ленте, либо парсить страницу сайта.
-
-Исходный код желательно выложить на GitHub. APK-файл в виде релиза там же.
-*
-* */
-
+import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
+import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManager;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerViewable;
 
 public class News4PDAApplication extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
         Logger.write("News4PDAApplication");
+        sqLiteManagerViewable = new SQLiteManager(this);
     }
+
+    public static Parser4PDAViewable getParser4PDA() {
+        return parser4PDA;
+    }
+
+    public static SQLiteManagerViewable getSqLiteManagerViewable() {
+        return sqLiteManagerViewable;
+    }
+
+    private static Parser4PDAViewable parser4PDA = new Parser4PDA();
+    private static SQLiteManagerViewable sqLiteManagerViewable;
 }

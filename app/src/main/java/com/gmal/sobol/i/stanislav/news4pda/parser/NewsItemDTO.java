@@ -7,7 +7,6 @@ public class NewsItemDTO {
 
     public static class Item {
 
-
         public String getImageURL() {
             return imageURL;
         }
@@ -18,6 +17,10 @@ public class NewsItemDTO {
 
         public String getDescription() {
             return description;
+        }
+
+        public String getDetailURL() {
+            return detailURL;
         }
 
         String imageURL;
