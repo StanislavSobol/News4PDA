@@ -5,14 +5,6 @@ import java.util.List;
 
 public class NewsItemDTO {
 
-    void add(Item item) {
-        items.add(item);
-    }
-
-    void clear() {
-        items.clear();
-    }
-
     public static class Item {
 
         public String getImageURL() {
@@ -30,6 +22,30 @@ public class NewsItemDTO {
         String imageURL;
         String title;
         String description;
+    }
+
+    public int size() {
+        return items.size();
+    }
+
+    List<Item> getItems() {
+        return items;
+    }
+
+    public Item get(int position) {
+        return items.get(position);
+    }
+
+    public void addAll(NewsItemDTO src) {
+        items.addAll(src.getItems());
+    }
+
+    void add(Item item) {
+        items.add(item);
+    }
+
+    void clear() {
+        items.clear();
     }
 
     private List<Item> items = new ArrayList<>();

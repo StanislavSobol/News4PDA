@@ -3,6 +3,7 @@ package com.gmal.sobol.i.stanislav.news4pda.parser;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
 import com.gmal.sobol.i.stanislav.news4pda.Logger;
 
 import org.jsoup.Jsoup;
@@ -15,11 +16,26 @@ import java.util.concurrent.RejectedExecutionException;
 
 public class Parser4PDA implements Parser4PDAViewable {
     public Parser4PDA() {
-        Logger.write("Parser4PDA constructor");
-        new ParsePageTask().safeExecute("http://4pda.ru/news/page/1/");
+    }
+
+    public void clearData() {
+        news.clear();
+    }
+
+    public void parsePage(int number, CallbackBundle callbackBundle) {
+        new ParsePageTask(callbackBundle).safeExecute("http://4pda.ru/news/page/" + number + "/");
+    }
+
+    @Override
+    public NewsItemDTO getParcedData() {
+        return news;
     }
 
     private class ParsePageTask extends AsyncTask<String, Void, Document> {
+
+        public ParsePageTask(CallbackBundle callbackBundle) {
+            this.callbackBundle = callbackBundle;
+        }
 
         protected void safeExecute(String url) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -40,28 +56,33 @@ public class Parser4PDA implements Parser4PDAViewable {
 
         @Override
         protected Document doInBackground(String... urls) {
-            Logger.write("Parser4PDA doInBackground");
-            Document doc = null;
+            Document document;
             try {
-                doc = Jsoup.connect("http://4pda.ru/news/page/1/").get();
+                document = Jsoup.connect("http://4pda.ru/news/page/1/").get();
             } catch (IOException e) {
                 e.printStackTrace();
-                Logger.write("Parser4PDA IOException");
-
+                return null;
             }
-            return doc;
+            parseDocument(document);
+            return document;
         }
 
         @Override
         protected void onPostExecute(Document document) {
-            Logger.write("Parser4PDA onPostExecute");
-            parseDocument(document);
+            if (document == null) {
+                Logger.write("Parser4PDA IOException");
+                if (callbackBundle.getError() != null) {
+                    callbackBundle.getError().run();
+                }
+            } else {
+                callbackBundle.getResult().run();
+            }
         }
+
+        private CallbackBundle callbackBundle;
     }
 
-    private void parseDocument(Document document) {
-        news.clear();
-
+    synchronized private void parseDocument(Document document) {
         Elements articles = document.getElementsByTag("article");
         for (Element article : articles) {
             if (!article.className().equals("post")) {
@@ -80,6 +101,4 @@ public class Parser4PDA implements Parser4PDAViewable {
     }
 
     private NewsItemDTO news = new NewsItemDTO();
-
-
 }
