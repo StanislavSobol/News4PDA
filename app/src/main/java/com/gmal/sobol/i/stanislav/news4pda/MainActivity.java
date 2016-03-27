@@ -14,16 +14,24 @@ import android.view.MenuItem;
 
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManager;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerViewable;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static MainActivity getInstance() {
+        return instance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.activity_main);
         initGraphics();
+
+        sqLiteManagerViewable = new SQLiteManager(this);
 
         CallbackBundle callbackBundle = new CallbackBundle();
 
@@ -43,6 +51,12 @@ public class MainActivity extends AppCompatActivity
 
         parser4PDA.clearData();
         parser4PDA.parsePage(1, callbackBundle);
+    }
+
+    @Override
+    protected void onDestroy() {
+        instance = null;
+        super.onDestroy();
     }
 
     @Override
@@ -99,8 +113,10 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private Parser4PDAViewable parser4PDA = new Parser4PDA();
+    private static MainActivity instance;
 
+    private Parser4PDAViewable parser4PDA = new Parser4PDA();
     private RecyclerView recyclerView;
+    SQLiteManagerViewable sqLiteManagerViewable;
 
 }

@@ -46,7 +46,7 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
             holder.titleTextVew.setText(item.getTitle());
             holder.descriptionTextView.setText(item.getDescription());
 
-
+            new DownloadImageTask(holder.imageView, true, null).safeExecute(item.getImageURL());
         }
     }
 

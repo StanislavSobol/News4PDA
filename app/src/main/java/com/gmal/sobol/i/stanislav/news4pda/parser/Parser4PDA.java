@@ -91,9 +91,10 @@ public class Parser4PDA implements Parser4PDAViewable {
             Element link = article.getElementsByTag("a").get(0);
 
             NewsItemDTO.Item item = new NewsItemDTO.Item();
-            item.imageURL = link.attr("href");
             item.title = link.attr("title");
+            item.detailURL = article.getElementsByTag("a").get(0).attr("href");
             item.description = article.getElementsByTag("p").get(0).text();
+            item.imageURL = article.getElementsByTag("img").get(0).attr("src");
             news.add(item);
         }
 
