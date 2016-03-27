@@ -80,9 +80,6 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... urls) {
-
-        Logger.write("image url = " + urls[0]);
-
         if (urls.length == 0) {
             return null;
         }

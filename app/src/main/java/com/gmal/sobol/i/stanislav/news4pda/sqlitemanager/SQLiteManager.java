@@ -1,12 +1,5 @@
 package com.gmal.sobol.i.stanislav.news4pda.sqlitemanager;
 
-//        http://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
-//        http://www.codeproject.com/Articles/119293/Using-SQLite-Database-with-Android
-//        http://stackoverflow.com/questions/12015731/android-sqlite-example
-//        http://stackoverflow.com/questions/10598137/rawqueryquery-selectionargs
-//        http://stackoverflow.com/questions/16832401/sqlite-auto-increment-not-working
-//        https://www.sqlite.org/datatypes.html
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

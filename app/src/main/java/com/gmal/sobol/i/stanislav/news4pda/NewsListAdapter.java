@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gmal.sobol.i.stanislav.news4pda.parser.NewsItemDTO;
@@ -26,9 +25,9 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
         private ImageView imageView;
     }
 
-    public NewsListAdapter(NewsItemDTO newsItemDTO) {
-        this.newsItemDTO = new NewsItemDTO();
-        this.newsItemDTO.addAll(newsItemDTO);
+    public NewsListAdapter(NewsItemDTO news) {
+        this.news = new NewsItemDTO();
+        this.news.addAll(news);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        NewsItemDTO.Item item = newsItemDTO.get(position);
+        NewsItemDTO.Item item = news.get(position);
         if (item != null) {
 
             holder.titleTextVew.setText(item.getTitle());
@@ -48,13 +47,23 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
 
             new DownloadImageTask(holder.imageView, true, null).safeExecute(item.getImageURL());
         }
+        MainActivity.getInstance().checkForNextPage(position);
     }
 
     @Override
     public int getItemCount() {
-        return newsItemDTO.size();
+        return news.size();
     }
 
-    private NewsItemDTO newsItemDTO;
+    void addNews(NewsItemDTO srcData) {
+//        news.clear();
+//        news.addAll(srcData);
+        int left = news.size();
+        for (int i = left; i < srcData.size(); i++) {
+            news.add(srcData.get(i));
+        }
+        notifyDataSetChanged();
+    }
 
+    private NewsItemDTO news;
 }

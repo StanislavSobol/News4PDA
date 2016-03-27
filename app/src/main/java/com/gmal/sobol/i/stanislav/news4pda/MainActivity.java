@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
@@ -33,24 +34,8 @@ public class MainActivity extends AppCompatActivity
 
         sqLiteManagerViewable = new SQLiteManager(this);
 
-        CallbackBundle callbackBundle = new CallbackBundle();
-
-        callbackBundle.setResult(new Runnable() {
-            @Override
-            public void run() {
-                recyclerView.setAdapter(new NewsListAdapter(parser4PDA.getParcedData()));
-            }
-        });
-
-        callbackBundle.setError(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-
         parser4PDA.clearData();
-        parser4PDA.parsePage(1, callbackBundle);
+        loadPage(1);
     }
 
     @Override
@@ -111,12 +96,56 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        fullProgressBar = (ProgressBar) findViewById(R.id.fullProgressBar);
+        recyclerProgressBar = (ProgressBar) findViewById(R.id.recyclerProgressBar);
     }
+
+    private void loadPage(final int number) {
+        if (number > 1) {
+            recyclerProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        CallbackBundle callbackBundle = new CallbackBundle();
+
+        callbackBundle.setResult(new Runnable() {
+            @Override
+            public void run() {
+                if (recyclerView.getAdapter() == null) {
+                    recyclerView.setAdapter(new NewsListAdapter(parser4PDA.getParsedData()));
+                } else {
+                    ((NewsListAdapter)recyclerView.getAdapter()).addNews(parser4PDA.getParsedData());
+                }
+                fullProgressBar.setVisibility(View.GONE);
+                recyclerProgressBar.setVisibility(View.GONE);
+                currentPageNumber = number;
+            }
+        });
+
+        callbackBundle.setError(new Runnable() {
+            @Override
+            public void run() {
+                // TODO notify about the error
+            }
+        });
+
+        parser4PDA.parsePage(number, callbackBundle);
+    }
+
+    public void checkForNextPage(int position) {
+        if (position + 1 >= parser4PDA.getParsedData().size()) {
+            loadPage(++currentPageNumber);
+            Logger.write("page currentPageNumber");
+        }
+    }
+
+    SQLiteManagerViewable sqLiteManagerViewable;
 
     private static MainActivity instance;
 
     private Parser4PDAViewable parser4PDA = new Parser4PDA();
     private RecyclerView recyclerView;
-    SQLiteManagerViewable sqLiteManagerViewable;
-
+    private ProgressBar fullProgressBar;
+    private ProgressBar recyclerProgressBar;
+    private int currentPageNumber = 0; // begining from 1
 }

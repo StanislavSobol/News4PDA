@@ -42,11 +42,11 @@ public class NewsItemDTO {
         items.addAll(src.getItems());
     }
 
-    void add(Item item) {
+    public void add(Item item) {
         items.add(item);
     }
 
-    void clear() {
+    public void clear() {
         items.clear();
     }
 

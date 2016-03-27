@@ -27,7 +27,7 @@ public class Parser4PDA implements Parser4PDAViewable {
     }
 
     @Override
-    public NewsItemDTO getParcedData() {
+    public NewsItemDTO getParsedData() {
         return news;
     }
 
@@ -58,7 +58,7 @@ public class Parser4PDA implements Parser4PDAViewable {
         protected Document doInBackground(String... urls) {
             Document document;
             try {
-                document = Jsoup.connect("http://4pda.ru/news/page/1/").get();
+                document = Jsoup.connect(urls[0]).get();
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -96,6 +96,8 @@ public class Parser4PDA implements Parser4PDAViewable {
             item.description = article.getElementsByTag("p").get(0).text();
             item.imageURL = article.getElementsByTag("img").get(0).attr("src");
             news.add(item);
+
+            Logger.write(" title = " + item.title );
         }
 
         Logger.write("Parser4PDA parseDocument ends");
