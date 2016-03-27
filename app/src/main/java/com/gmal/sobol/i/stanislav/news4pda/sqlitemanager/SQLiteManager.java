@@ -22,7 +22,7 @@ public class SQLiteManager implements SQLiteManagerViewable {
 
     @Override
     synchronized public void setBitmapToPool(String url, Bitmap bitmap) {
-        if (imagesPool.get(url) == null) {
+        if (imagesPool.get(url) == null && bitmap != null) {
             imagesPool.put(url, bitmap);
 
             database.execSQL("insert into images(url) values (?)", new String[]{url});

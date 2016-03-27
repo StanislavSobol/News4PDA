@@ -8,8 +8,8 @@ public class Logger {
         Log.d(COMMON_TAG, msg);
     }
 
-    public static void writeVKManagerLog(String msg) {
-        Log.d(VK_MANAGER_TAG, msg);
+    public static void writeErrorsLog(String msg) {
+        Log.d(ERROR_TAG, msg);
     }
 
     public static void writePush(String msg) {
@@ -17,6 +17,6 @@ public class Logger {
     }
 
     private static final String COMMON_TAG = "MyLog";
-    private static final String VK_MANAGER_TAG = "MyVKManager";
+    private static final String ERROR_TAG = "MyErrors";
     private static final String PUSH_TAG = "MyPush";
 }

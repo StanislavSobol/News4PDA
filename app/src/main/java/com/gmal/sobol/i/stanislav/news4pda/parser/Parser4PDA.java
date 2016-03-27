@@ -67,6 +67,8 @@ public class Parser4PDA implements Parser4PDAViewable {
                 e.printStackTrace();
                 return null;
             }
+
+
             if (isNewsPage) {
                 parsePageDocument(document);
             } else {
@@ -109,9 +111,37 @@ public class Parser4PDA implements Parser4PDAViewable {
     }
 
     synchronized private void parseDetailedNewDocument(Document document) {
-        Logger.write(document.title());
+        detailedNew.clear();
+        detailedNew.title = document.title().replace(" - 4PDA","");
+
+        Elements metas =  document.getElementsByTag("meta");
+        for (Element meta : metas) {
+            if (meta.attr("property").equals("og:description")) {
+                detailedNew.description = meta.attr("content");
+            } else if (meta.attr("property").equals("og:image")) {
+                detailedNew.titleImageURL = meta.attr("content");
+            }
+        }
+
+        Elements ps =  document.getElementsByTag("p");
+        for (Element p : ps) {
+            DetailedNewDTO.ContentItem contentItem = new DetailedNewDTO.ContentItem();
+
+
+            // test
+            if (p.attr("style").equals("text-align: justify;")) {
+                contentItem.isImage = false;
+                contentItem.content = p.text();
+            } else
+            if (p.attr("style").equals("text-align: center;")) {
+                contentItem.isImage = true;
+                contentItem.content = p.getElementsByTag("a").get(0).getElementsByTag("img").attr("src");
+            }
+
+            detailedNew.add(contentItem);
+        }
     }
 
-
     private NewsItemDTO news = new NewsItemDTO();
+    private DetailedNewDTO detailedNew = new DetailedNewDTO();
 }

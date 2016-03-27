@@ -140,5 +140,5 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private ProgressBar fullProgressBar;
     private ProgressBar recyclerProgressBar;
-    private int currentPageNumber = 0; // begining from 1
+    private int currentPageNumber = 0; // begins from 1
 }
