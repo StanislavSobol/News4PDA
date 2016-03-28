@@ -52,7 +52,11 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
     private void setContent() {
         DetailedNewDTO detailedNewDTO = News4PDAApplication.getParser4PDA().getParsedDetailedNewData();
 
-        setTitle("4PDA - " + detailedNewDTO.getTitle());
+        if (detailedNewDTO.getTitle().isEmpty()) {
+            setTitle("Doesn't work offline yet, sorry :(");
+        } else {
+            setTitle("4PDA - " + detailedNewDTO.getTitle());
+        }
 
         titleTextView.setText(detailedNewDTO.getTitle());
         descriptionTextView.setText(detailedNewDTO.getDescription());
