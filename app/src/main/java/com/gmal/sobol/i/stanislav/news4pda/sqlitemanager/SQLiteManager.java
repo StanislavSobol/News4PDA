@@ -7,20 +7,29 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.gmal.sobol.i.stanislav.news4pda.Logger;
+import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SQLiteManager implements SQLiteManagerViewable {
+public class SQLiteManager implements SQLiteManagerImagePool, SQLiteManagerDataPool {
 
-    @Override
+    public SQLiteManager(Context context) {
+        this.context = context;
+        database = (new DBHelper(context)).getWritableDatabase();
+        loadImagesPool();
+    }
+
+    // SQLiteManagerImagePool ----------------------------------------------------------------------
+
     public Bitmap getBitmapFromPoolByURL(String url) {
         return imagesPool.get(url);
     }
 
-    @Override
     synchronized public void setBitmapToPool(String url, Bitmap bitmap) {
         if (imagesPool.get(url) == null && bitmap != null) {
             imagesPool.put(url, bitmap);
@@ -50,11 +59,50 @@ public class SQLiteManager implements SQLiteManagerViewable {
 
     }
 
-    public SQLiteManager(Context context) {
-        this.context = context;
-        database = (new DBHelper(context)).getWritableDatabase();
-        loadImagesPool();
+    // SQLiteManagerWriteable ----------------------------------------------------------------------
+
+    private static int numInserted = 0;
+
+    synchronized public void addNewsItemDTO(NewsDTO.Item item, String srcURL) {
+        String[] strings = new String[]
+                {
+                        item.getDetailURL(),
+                        srcURL,
+                        item.getTitle(),
+                        item.getDetailURL(),
+                        item.getDescription()
+                };
+        database.execSQL("insert or replace into news(url,src_url,title,image_url,description) values (?,?,?,?,?)", strings);
+
+        Logger.write(Integer.valueOf(++numInserted).toString());
     }
+
+    synchronized public void loadPage(NewsDTO newsDTO, String srcURL) {
+
+        Cursor cursor =
+                database.rawQuery("select url,title,image_url,description,src_url from news where src_url = ?",
+                        new String[]{srcURL});
+
+        Logger.write("srcURL = " + srcURL);
+        Logger.write("getCount() = " + Integer.valueOf(cursor.getCount()));
+        if (cursor.moveToFirst()) {
+            do {
+                Logger.write(cursor.getString(4));
+
+                NewsDTO.Item item = new NewsDTO.Item();
+
+                item.setDetailURL(cursor.getString(0));
+                item.setTitle(cursor.getString(1));
+                item.setImageURL(cursor.getString(2));
+                item.setDescription(cursor.getString(3));
+
+                newsDTO.add(item);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+    }
+
+    // INNER ---------------------------------------------------------------------------------------
 
     private String getImagesPath() {
         return context.getFilesDir().toString() + "/";
@@ -91,16 +139,31 @@ public class SQLiteManager implements SQLiteManagerViewable {
         @Override
         public void onCreate(SQLiteDatabase database) {
             database.execSQL("create table images ( _id integer primary key, url text not null);");
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("create table news (");
+            sb.append("url text primary key,");
+            sb.append("src_url text,");
+            sb.append("title text not null,");
+            sb.append("image_url text not null,");
+            sb.append("description text not null");
+            sb.append(")");
+
+            database.execSQL(sb.toString());
+
+            sb.setLength(0);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
             database.execSQL("drop table if exists images");
+            database.execSQL("drop table if exists news");
+            database.execSQL("drop table if exists detailed_new");
             onCreate(database);
         }
 
         private static final String DATABASE_NAME = "db";
-        private static final int DATABASE_VERSION = 1;
+        private static final int DATABASE_VERSION = 10;
     }
 
     private SQLiteDatabase database;

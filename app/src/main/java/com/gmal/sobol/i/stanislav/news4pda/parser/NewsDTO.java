@@ -3,7 +3,7 @@ package com.gmal.sobol.i.stanislav.news4pda.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsItemDTO {
+public class NewsDTO {
 
     public static class Item {
 
@@ -23,6 +23,22 @@ public class NewsItemDTO {
             return detailURL;
         }
 
+        public void setImageURL(String imageURL) {
+            this.imageURL = imageURL;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public void setDetailURL(String detailURL) {
+            this.detailURL = detailURL;
+        }
+
         String imageURL;
         String title;
         String description;
@@ -33,7 +49,7 @@ public class NewsItemDTO {
         return items.size();
     }
 
-    List<Item> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 
@@ -41,7 +57,7 @@ public class NewsItemDTO {
         return items.get(position);
     }
 
-    public void addAll(NewsItemDTO src) {
+    public void addAll(NewsDTO src) {
         items.addAll(src.getItems());
     }
 

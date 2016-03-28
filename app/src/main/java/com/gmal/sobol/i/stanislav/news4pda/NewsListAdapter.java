@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.NewsItemDTO;
+import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
 
-public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holder> {
+public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
     private MainActivity mainActivity;
 
@@ -27,9 +27,9 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
         private ImageView imageView;
     }
 
-    public NewsListAdapter(NewsItemDTO news, MainActivity mainActivity) {
+    public NewsListAdapter(NewsDTO news, MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        this.news = new NewsItemDTO();
+        this.news = new NewsDTO();
         this.news.addAll(news);
     }
 
@@ -42,7 +42,7 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
 
     @Override
     public void onBindViewHolder(Holder holder, final int position) {
-        final NewsItemDTO.Item item = news.get(position);
+        final NewsDTO.Item item = news.get(position);
         if (item != null) {
 
             holder.titleTextVew.setText(item.getTitle());
@@ -68,15 +68,17 @@ public class NewsListAdapter  extends RecyclerView.Adapter<NewsListAdapter.Holde
         return news.size();
     }
 
-    void addNews(NewsItemDTO srcData) {
-//        news.clear();
-//        news.addAll(srcData);
-        int left = news.size();
-        for (int i = left; i < srcData.size(); i++) {
-            news.add(srcData.get(i));
+    boolean addNews(NewsDTO srcData) {
+        if (srcData.size() > news.size()) {
+            int left = news.size();
+            for (int i = left; i < srcData.size(); i++) {
+                news.add(srcData.get(i));
+            }
+            notifyDataSetChanged();
+            return true;
         }
-        notifyDataSetChanged();
+        return false;
     }
 
-    private NewsItemDTO news;
+    private NewsDTO news;
 }

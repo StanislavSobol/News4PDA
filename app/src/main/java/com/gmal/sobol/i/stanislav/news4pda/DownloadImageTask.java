@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Looper;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -30,6 +29,11 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
         this.imageView = imageView;
         this.usePool = usePool;
+
+        if (News4PDAApplication.isOnlineWithToast(false)) {
+            this.usePool = true;
+        }
+
         this.finalRunnable = finalRunnable;
 
         if (imageView != null ) {
@@ -54,7 +58,7 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         currentTasks.add(this);
 
         if (usePool) {
-            bitmap = News4PDAApplication.getSqLiteManagerViewable().getBitmapFromPoolByURL(url);
+            bitmap = News4PDAApplication.getSqLiteManagerImagePool().getBitmapFromPoolByURL(url);
             if (bitmap != null) {
                 onPostExecute(bitmap);
                 return;
@@ -94,7 +98,7 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
             InputStream in = new java.net.URL(url).openStream();
             bitmap = BitmapFactory.decodeStream(in);
             if (usePool) {
-                News4PDAApplication.getSqLiteManagerViewable().setBitmapToPool(url, bitmap);
+                News4PDAApplication.getSqLiteManagerImagePool().setBitmapToPool(url, bitmap);
             }
         } catch (Exception e) {
             e.printStackTrace();

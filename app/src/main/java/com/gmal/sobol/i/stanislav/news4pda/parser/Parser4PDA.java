@@ -5,6 +5,8 @@ import android.os.Build;
 
 import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
 import com.gmal.sobol.i.stanislav.news4pda.Logger;
+import com.gmal.sobol.i.stanislav.news4pda.News4PDAApplication;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataPool;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +29,7 @@ public class Parser4PDA implements Parser4PDAViewable {
         new ParsePageTask(callbackBundle, true).safeExecute("http://4pda.ru/news/page/" + number + "/");
     }
 
-    public NewsItemDTO getParsedNewsData() {
+    public NewsDTO getParsedNewsData() {
         return news;
     }
 
@@ -41,7 +43,6 @@ public class Parser4PDA implements Parser4PDAViewable {
     }
 
     private class ParsePageTask extends AsyncTask<String, Void, Document> {
-
         public ParsePageTask(CallbackBundle callbackBundle, boolean isNewsPage) {
             this.callbackBundle = callbackBundle;
             this.isNewsPage = isNewsPage;
@@ -66,26 +67,36 @@ public class Parser4PDA implements Parser4PDAViewable {
 
         @Override
         protected Document doInBackground(String... urls) {
-            Document document;
-            try {
-                document = Jsoup.connect(urls[0]).get();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
+            Document document = null;
 
+            if (News4PDAApplication.isOnlineWithToast(false)) {
+                try {
+                    document = Jsoup.connect(urls[0]).get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    isError = true;
+                    return null;
+                }
 
-            if (isNewsPage) {
-                parsePageDocument(document);
+                if (isNewsPage) {
+                    parsePageDocument(document, urls[0]);
+                } else {
+                    parseDetailedNewDocument(document);
+                }
             } else {
-                parseDetailedNewDocument(document);
+                if (isNewsPage) {
+                    loadPageFromDB(urls[0]);
+                } else {
+                   // parseDetailedNewDocument(document);
+                }
             }
+
             return document;
         }
 
         @Override
         protected void onPostExecute(Document document) {
-            if (document == null) {
+            if (isError) {
                 Logger.write("Parser4PDA IOException");
                 if (callbackBundle.getError() != null) {
                     callbackBundle.getError().run();
@@ -97,9 +108,14 @@ public class Parser4PDA implements Parser4PDAViewable {
 
         private CallbackBundle callbackBundle;
         private boolean isNewsPage;
+        private boolean isError = false;
     }
 
-    synchronized private void parsePageDocument(Document document) {
+    synchronized private void loadPageFromDB(String url) {
+        sqLiteManagerDataPool.loadPage(news, url);
+    }
+
+    synchronized private void parsePageDocument(Document document, String srcURL) {
         Elements articles = document.getElementsByTag("article");
         for (Element article : articles) {
             if (!article.className().equals("post")) {
@@ -107,12 +123,14 @@ public class Parser4PDA implements Parser4PDAViewable {
             }
             Element link = article.getElementsByTag("a").get(0);
 
-            NewsItemDTO.Item item = new NewsItemDTO.Item();
+            NewsDTO.Item item = new NewsDTO.Item();
             item.title = link.attr("title");
             item.detailURL = article.getElementsByTag("a").get(0).attr("href");
             item.description = article.getElementsByTag("p").get(0).text();
             item.imageURL = article.getElementsByTag("img").get(0).attr("src");
             news.add(item);
+
+            sqLiteManagerDataPool.addNewsItemDTO(item, srcURL);
         }
     }
 
@@ -151,6 +169,7 @@ public class Parser4PDA implements Parser4PDAViewable {
         }
     }
 
-    private NewsItemDTO news = new NewsItemDTO();
+    private NewsDTO news = new NewsDTO();
     private DetailedNewDTO detailedNew = new DetailedNewDTO();
+    private SQLiteManagerDataPool sqLiteManagerDataPool = News4PDAApplication.getSqLiteManagerWriteable();
 }

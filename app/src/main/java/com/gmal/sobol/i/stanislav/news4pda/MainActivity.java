@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.NewsItemDTO;
+import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
 
 public class MainActivity extends AppCompatActivity
@@ -58,38 +58,15 @@ public class MainActivity extends AppCompatActivity
 
     void checkForNextPage(int position) {
         if (position + 1 >= parser4PDA.getParsedNewsData().size()) {
-            loadPage(++currentPageNumber);
-            Logger.write("page currentPageNumber");
+            loadPage(currentPageNumber + 1);
+
         }
     }
 
-    void showDetailedNew(NewsItemDTO.Item item) {
+    void showDetailedNew(NewsDTO.Item item) {
         Intent intent = new Intent(MainActivity.this, DetailedNewScrollingActivity.class);
         intent.putExtra("url", item.getDetailURL());
         startActivity(intent);
-
-        /*
-
-
-        CallbackBundle callbackBundle = new CallbackBundle();
-
-        callbackBundle.setResult(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(MainActivity.this, DetailedNewScrollingActivity.class));
-            }
-        });
-
-        callbackBundle.setError(new Runnable() {
-            @Override
-            public void run() {
-                // TODO notify about the error
-            }
-        });
-
-        parser4PDA.parseDetailedNew(item.getDetailURL(), callbackBundle);
-
-        */
     }
 
     private void initGraphics() {
@@ -115,6 +92,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadPage(final int number) {
+        Logger.write("check for page currentPageNumber = " + number);
+
         if (number > 1) {
             recyclerProgressBar.setVisibility(View.VISIBLE);
         }
@@ -124,14 +103,20 @@ public class MainActivity extends AppCompatActivity
         callbackBundle.setResult(new Runnable() {
             @Override
             public void run() {
+                boolean added;
                 if (recyclerView.getAdapter() == null) {
                     recyclerView.setAdapter(new NewsListAdapter(parser4PDA.getParsedNewsData(), MainActivity.this));
+                    added = true;
                 } else {
-                    ((NewsListAdapter) recyclerView.getAdapter()).addNews(parser4PDA.getParsedNewsData());
+                    added =
+                            ((NewsListAdapter) recyclerView.getAdapter()).addNews(parser4PDA.getParsedNewsData());
                 }
                 fullProgressBar.setVisibility(View.GONE);
                 recyclerProgressBar.setVisibility(View.GONE);
-                currentPageNumber = number;
+                if (added) {
+                    currentPageNumber = number;
+                    Logger.write("page currentPageNumber = " + currentPageNumber);
+                }
             }
         });
 
