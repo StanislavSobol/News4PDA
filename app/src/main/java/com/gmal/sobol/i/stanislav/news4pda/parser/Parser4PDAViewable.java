@@ -7,4 +7,5 @@ public interface Parser4PDAViewable {
     void parseNewsPage(int number, CallbackBundle callbackBundle);
     NewsItemDTO getParsedNewsData();
     void parseDetailedNew(String url, CallbackBundle callbackBundle);
+    DetailedNewDTO getParsedDetailedNewData();
 }

@@ -35,6 +35,11 @@ public class Parser4PDA implements Parser4PDAViewable {
         new ParsePageTask(callbackBundle, false).safeExecute(url);
     }
 
+    @Override
+    public DetailedNewDTO getParsedDetailedNewData() {
+        return detailedNew;
+    }
+
     private class ParsePageTask extends AsyncTask<String, Void, Document> {
 
         public ParsePageTask(CallbackBundle callbackBundle, boolean isNewsPage) {
@@ -113,9 +118,9 @@ public class Parser4PDA implements Parser4PDAViewable {
 
     synchronized private void parseDetailedNewDocument(Document document) {
         detailedNew.clear();
-        detailedNew.title = document.title().replace(" - 4PDA","");
+        detailedNew.title = document.title().replace(" - 4PDA", "");
 
-        Elements metas =  document.getElementsByTag("meta");
+        Elements metas = document.getElementsByTag("meta");
         for (Element meta : metas) {
             if (meta.attr("property").equals("og:description")) {
                 detailedNew.description = meta.attr("content");
@@ -124,17 +129,22 @@ public class Parser4PDA implements Parser4PDAViewable {
             }
         }
 
-        Elements ps =  document.getElementsByTag("p");
+        Elements ps = document.getElementsByTag("p");
         for (Element p : ps) {
             DetailedNewDTO.ContentItem contentItem = new DetailedNewDTO.ContentItem();
 
             if (p.attr("style").equals("text-align: justify;")) {
                 contentItem.isImage = false;
                 contentItem.content = p.text();
-            } else
-            if (p.attr("style").equals("text-align: center;")) {
+            } else if (p.attr("style").equals("text-align: center;")) {
                 contentItem.isImage = true;
-                contentItem.content = p.getElementsByTag("a").get(0).getElementsByTag("img").attr("src");
+                try {
+                    contentItem.content = p.getElementsByTag("a").get(0).getElementsByTag("img").attr("src");
+                } catch (java.lang.IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    // TODO To the error report
+                    contentItem.content = "";
+                }
             }
 
             detailedNew.add(contentItem);

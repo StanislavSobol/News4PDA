@@ -7,6 +7,20 @@ import java.util.List;
 
 public class DetailedNewDTO {
 
+    public static class ContentItem {
+
+        public boolean isImage() {
+            return isImage;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        boolean isImage;
+        String content = "";
+    }
+
     public String getTitle() {
         return title;
     }
@@ -34,11 +48,6 @@ public class DetailedNewDTO {
             Logger.write("contentItem.content = " + contentItem.content);
             contentItems.add(contentItem);
         }
-    }
-
-    static class ContentItem {
-        boolean isImage;
-        String content = "";
     }
 
     String title = "";

@@ -27,7 +27,8 @@
         <activity
             android:name=".DetailedNewScrollingActivity"
             android:label="@string/title_activity_detailed_new_scrolling"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
