@@ -55,6 +55,9 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected void safeExecute(String url) {
+
+        Logger.write("offline url = " + url);
+
         currentTasks.add(this);
 
         if (usePool) {

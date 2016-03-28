@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SQLiteManager implements SQLiteManagerImagePool, SQLiteManagerDataPool {
+public class SQLiteManagerProvider implements SQLiteManagerImagePoolProvider, SQLiteManagerDataProvider {
 
-    public SQLiteManager(Context context) {
+    public SQLiteManagerProvider(Context context) {
         this.context = context;
         database = (new DBHelper(context)).getWritableDatabase();
         loadImagesPool();
@@ -69,7 +69,7 @@ public class SQLiteManager implements SQLiteManagerImagePool, SQLiteManagerDataP
                         item.getDetailURL(),
                         srcURL,
                         item.getTitle(),
-                        item.getDetailURL(),
+                        item.getImageURL(),
                         item.getDescription()
                 };
         database.execSQL("insert or replace into news(url,src_url,title,image_url,description) values (?,?,?,?,?)", strings);
@@ -163,7 +163,7 @@ public class SQLiteManager implements SQLiteManagerImagePool, SQLiteManagerDataP
         }
 
         private static final String DATABASE_NAME = "db";
-        private static final int DATABASE_VERSION = 10;
+        private static final int DATABASE_VERSION = 11;
     }
 
     private SQLiteDatabase database;

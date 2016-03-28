@@ -6,7 +6,7 @@ import android.os.Build;
 import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
 import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.News4PDAApplication;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataPool;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataProvider;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -112,7 +112,7 @@ public class Parser4PDA implements Parser4PDAViewable {
     }
 
     synchronized private void loadPageFromDB(String url) {
-        sqLiteManagerDataPool.loadPage(news, url);
+        sqLiteManagerDataProvider.loadPage(news, url);
     }
 
     synchronized private void parsePageDocument(Document document, String srcURL) {
@@ -130,7 +130,7 @@ public class Parser4PDA implements Parser4PDAViewable {
             item.imageURL = article.getElementsByTag("img").get(0).attr("src");
             news.add(item);
 
-            sqLiteManagerDataPool.addNewsItemDTO(item, srcURL);
+            sqLiteManagerDataProvider.addNewsItemDTO(item, srcURL);
         }
     }
 
@@ -171,5 +171,5 @@ public class Parser4PDA implements Parser4PDAViewable {
 
     private NewsDTO news = new NewsDTO();
     private DetailedNewDTO detailedNew = new DetailedNewDTO();
-    private SQLiteManagerDataPool sqLiteManagerDataPool = News4PDAApplication.getSqLiteManagerWriteable();
+    private SQLiteManagerDataProvider sqLiteManagerDataProvider = News4PDAApplication.getSqLiteManagerWriteable();
 }

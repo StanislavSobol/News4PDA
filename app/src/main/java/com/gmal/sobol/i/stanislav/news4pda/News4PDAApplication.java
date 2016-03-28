@@ -3,14 +3,13 @@ package com.gmal.sobol.i.stanislav.news4pda;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
 import android.widget.Toast;
 
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManager;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerImagePool;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataPool;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerProvider;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerImagePoolProvider;
+import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataProvider;
 
 public class News4PDAApplication extends android.app.Application {
 
@@ -18,8 +17,7 @@ public class News4PDAApplication extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        isOnlineWithToast(true);
-        sqLiteManager = new SQLiteManager(this);
+        sqLiteManager = new SQLiteManagerProvider(this);
         parser4PDA = new Parser4PDA();
     }
 
@@ -27,11 +25,11 @@ public class News4PDAApplication extends android.app.Application {
         return parser4PDA;
     }
 
-    public static SQLiteManagerImagePool getSqLiteManagerImagePool() {
+    public static SQLiteManagerImagePoolProvider getSqLiteManagerImagePool() {
         return sqLiteManager;
     }
 
-    public static SQLiteManagerDataPool getSqLiteManagerWriteable() {
+    public static SQLiteManagerDataProvider getSqLiteManagerWriteable() {
         return sqLiteManager;
     }
 
@@ -52,5 +50,5 @@ public class News4PDAApplication extends android.app.Application {
 
     private static News4PDAApplication instance;
     private static Parser4PDAViewable parser4PDA;
-    private static SQLiteManager sqLiteManager;
+    private static SQLiteManagerProvider sqLiteManager;
 }

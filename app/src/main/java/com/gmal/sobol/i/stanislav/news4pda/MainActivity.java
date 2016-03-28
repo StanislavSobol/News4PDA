@@ -30,6 +30,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        setTitleOnlineStatus();
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -91,7 +97,18 @@ public class MainActivity extends AppCompatActivity
         recyclerProgressBar = (ProgressBar) findViewById(R.id.recyclerProgressBar);
     }
 
+    private void setTitleOnlineStatus() {
+        String title = getResources().getString(R.string.app_name);
+        if(News4PDAApplication.isOnlineWithToast(true)) {
+            setTitle("[ONLINE] " + title);
+        } else {
+            setTitle("[OFFLINE] " + title);
+        }
+    }
+
     private void loadPage(final int number) {
+        setTitleOnlineStatus();
+
         Logger.write("check for page currentPageNumber = " + number);
 
         if (number > 1) {

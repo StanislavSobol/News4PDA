@@ -8,5 +8,5 @@
     <string name="title_activity_detailed_new_scrolling">4PDA News in detail</string>
 
     <!-- Errors-->
-    <string name="error_no_internet">Please check your internet connection and retry later!</string>
+    <string name="error_no_internet">Please check your internet. The app goes offline</string>
 </resources>
