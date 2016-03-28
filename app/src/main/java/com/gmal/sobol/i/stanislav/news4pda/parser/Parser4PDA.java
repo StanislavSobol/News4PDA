@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
-import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.News4PDAApplication;
 import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataProvider;
 
@@ -87,7 +86,7 @@ public class Parser4PDA implements Parser4PDAViewable {
                 if (isNewsPage) {
                     loadPageFromDB(urls[0]);
                 } else {
-                   // parseDetailedNewDocument(document);
+                    // parseDetailedNewDocument(document);
                 }
             }
 
@@ -97,7 +96,6 @@ public class Parser4PDA implements Parser4PDAViewable {
         @Override
         protected void onPostExecute(Document document) {
             if (isError) {
-                Logger.write("Parser4PDA IOException");
                 if (callbackBundle.getError() != null) {
                     callbackBundle.getError().run();
                 }

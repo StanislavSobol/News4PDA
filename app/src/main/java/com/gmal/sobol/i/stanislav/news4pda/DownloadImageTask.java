@@ -36,7 +36,7 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 
         this.finalRunnable = finalRunnable;
 
-        if (imageView != null ) {
+        if (imageView != null) {
             ViewParent viewParent = imageView.getParent();
             if (viewParent != null && viewParent instanceof FrameLayout) {
                 progressBar = new ProgressBar(context);
@@ -55,9 +55,6 @@ class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     }
 
     protected void safeExecute(String url) {
-
-        Logger.write("offline url = " + url);
-
         currentTasks.add(this);
 
         if (usePool) {

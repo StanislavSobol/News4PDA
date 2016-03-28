@@ -1,7 +1,5 @@
 package com.gmal.sobol.i.stanislav.news4pda.parser;
 
-import com.gmal.sobol.i.stanislav.news4pda.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +43,6 @@ public class DetailedNewDTO {
 
     void add(ContentItem contentItem) {
         if (!contentItem.content.isEmpty()) {
-            Logger.write("contentItem.content = " + contentItem.content);
             contentItems.add(contentItem);
         }
     }

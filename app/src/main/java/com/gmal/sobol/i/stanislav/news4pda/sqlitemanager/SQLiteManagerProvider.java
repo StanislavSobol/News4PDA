@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
 
 import java.io.File;
@@ -59,9 +58,7 @@ public class SQLiteManagerProvider implements SQLiteManagerImagePoolProvider, SQ
 
     }
 
-    // SQLiteManagerWriteable ----------------------------------------------------------------------
-
-    private static int numInserted = 0;
+    // SQLiteManagerDataProvider -------------------------------------------------------------------
 
     synchronized public void addNewsItemDTO(NewsDTO.Item item, String srcURL) {
         String[] strings = new String[]
@@ -73,8 +70,6 @@ public class SQLiteManagerProvider implements SQLiteManagerImagePoolProvider, SQ
                         item.getDescription()
                 };
         database.execSQL("insert or replace into news(url,src_url,title,image_url,description) values (?,?,?,?,?)", strings);
-
-        Logger.write(Integer.valueOf(++numInserted).toString());
     }
 
     synchronized public void loadPage(NewsDTO newsDTO, String srcURL) {
@@ -83,12 +78,8 @@ public class SQLiteManagerProvider implements SQLiteManagerImagePoolProvider, SQ
                 database.rawQuery("select url,title,image_url,description,src_url from news where src_url = ?",
                         new String[]{srcURL});
 
-        Logger.write("srcURL = " + srcURL);
-        Logger.write("getCount() = " + Integer.valueOf(cursor.getCount()));
         if (cursor.moveToFirst()) {
             do {
-                Logger.write(cursor.getString(4));
-
                 NewsDTO.Item item = new NewsDTO.Item();
 
                 item.setDetailURL(cursor.getString(0));

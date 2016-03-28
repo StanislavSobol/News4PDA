@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setTitleOnlineStatus() {
         String title = getResources().getString(R.string.app_name);
-        if(News4PDAApplication.isOnlineWithToast(true)) {
+        if (News4PDAApplication.isOnlineWithToast(true)) {
             setTitle("[ONLINE] " + title);
         } else {
             setTitle("[OFFLINE] " + title);
@@ -108,8 +108,6 @@ public class MainActivity extends AppCompatActivity
 
     private void loadPage(final int number) {
         setTitleOnlineStatus();
-
-        Logger.write("check for page currentPageNumber = " + number);
 
         if (number > 1) {
             recyclerProgressBar.setVisibility(View.VISIBLE);
@@ -132,7 +130,6 @@ public class MainActivity extends AppCompatActivity
                 recyclerProgressBar.setVisibility(View.GONE);
                 if (added) {
                     currentPageNumber = number;
-                    Logger.write("page currentPageNumber = " + currentPageNumber);
                 }
             }
         });
