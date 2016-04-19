@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
@@ -48,9 +51,16 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
             holder.titleTextVew.setText(item.getTitle());
             holder.descriptionTextView.setText(item.getDescription());
 
-            new DownloadImageTask(mainActivity, holder.imageView, true, null).safeExecute(item.getImageURL());
+            if (!item.getImageURL().isEmpty()) {
+                RequestCreator requestCreator = Picasso.with(mainActivity)
+                        .load(item.getImageURL())
+                        .placeholder(R.drawable.ic_menu_gallery);
+                if (!News4PDAApplication.isOnlineWithToast(false)) {
+                    requestCreator.networkPolicy(NetworkPolicy.OFFLINE);
+                }
+                requestCreator.into(holder.imageView);
+            }
 
-//            holder.itemView.setTag(item.getHistoryTag());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

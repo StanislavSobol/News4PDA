@@ -12,6 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gmal.sobol.i.stanislav.news4pda.parser.DetailedNewDTO;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import java.util.List;
 
@@ -60,7 +63,23 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
 
         titleTextView.setText(detailedNewDTO.getTitle());
         descriptionTextView.setText(detailedNewDTO.getDescription());
-        new DownloadImageTask(this, titleImageView, true, null).safeExecute(detailedNewDTO.getTitleImageURL());
+//        new DownloadImageTask(this, titleImageView, true, null).safeExecute(detailedNewDTO.getTitleImageURL());
+
+        if (!detailedNewDTO.getTitleImageURL().isEmpty()) {
+            RequestCreator requestCreator = Picasso.with(this)
+                    .load(detailedNewDTO.getTitleImageURL())
+                    .placeholder(R.drawable.ic_menu_gallery);
+            if (!News4PDAApplication.isOnlineWithToast(false)) {
+                requestCreator.networkPolicy(NetworkPolicy.OFFLINE);
+            }
+            requestCreator.into(titleImageView);
+        }
+
+
+//        Picasso.with(this)
+//                .load(detailedNewDTO.getTitleImageURL())
+//                .placeholder(R.drawable.ic_menu_gallery)
+//                .into(titleImageView);
 
         LinearLayout containerLayout = (LinearLayout) findViewById(R.id.containerLayout);
 
@@ -71,7 +90,13 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
             if (item.isImage()) {
                 view = getLayoutInflater().inflate(R.layout.detailed_new_image_content, null);
                 ImageView imageView = (ImageView) view.findViewById(R.id.detailedNewContentImageView);
-                new DownloadImageTask(this, imageView, false, null).safeExecute(item.getContent());
+
+                if (!item.getContent().isEmpty()) {
+                    Picasso.with(this)
+                            .load(item.getContent())
+                            .placeholder(R.drawable.ic_menu_gallery)
+                            .into(imageView);
+                }
             } else {
                 view = getLayoutInflater().inflate(R.layout.detailed_new_text_content, null);
                 TextView textView = (TextView) view.findViewById(R.id.detailedNewContentTextView);

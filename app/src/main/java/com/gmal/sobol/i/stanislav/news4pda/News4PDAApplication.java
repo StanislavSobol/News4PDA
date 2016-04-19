@@ -8,7 +8,6 @@ import android.widget.Toast;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
 import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerProvider;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerImagePoolProvider;
 import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataProvider;
 
 public class News4PDAApplication extends android.app.Application {
@@ -25,9 +24,6 @@ public class News4PDAApplication extends android.app.Application {
         return parser4PDA;
     }
 
-    public static SQLiteManagerImagePoolProvider getSqLiteManagerImagePool() {
-        return sqLiteManager;
-    }
 
     public static SQLiteManagerDataProvider getSqLiteManagerWriteable() {
         return sqLiteManager;

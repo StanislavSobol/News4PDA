@@ -15,47 +15,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SQLiteManagerProvider implements SQLiteManagerImagePoolProvider, SQLiteManagerDataProvider {
+public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
 
     public SQLiteManagerProvider(Context context) {
         this.context = context;
         database = (new DBHelper(context)).getWritableDatabase();
         loadImagesPool();
-    }
-
-    // SQLiteManagerImagePool ----------------------------------------------------------------------
-
-    public Bitmap getBitmapFromPoolByURL(String url) {
-        return imagesPool.get(url);
-    }
-
-    synchronized public void setBitmapToPool(String url, Bitmap bitmap) {
-        if (imagesPool.get(url) == null && bitmap != null) {
-            imagesPool.put(url, bitmap);
-
-            database.execSQL("insert into images(url) values (?)", new String[]{url});
-            Cursor cursor = database.rawQuery("select last_insert_rowid()", null);
-            cursor.moveToFirst();
-            String filename = getImagesPath() + cursor.getInt(0) + ".jpg";
-            cursor.close();
-
-            FileOutputStream fileOutputStream = null;
-            try {
-                fileOutputStream = new FileOutputStream(filename);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fileOutputStream);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (fileOutputStream != null) {
-                        fileOutputStream.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
     }
 
     // SQLiteManagerDataProvider -------------------------------------------------------------------
