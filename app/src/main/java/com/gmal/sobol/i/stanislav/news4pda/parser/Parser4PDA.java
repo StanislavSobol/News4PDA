@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
+import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.News4PDAApplication;
 import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataProvider;
 
@@ -15,9 +16,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.concurrent.RejectedExecutionException;
 
+import javax.inject.Inject;
+
 public class Parser4PDA implements Parser4PDAViewable {
 
     public Parser4PDA() {
+        News4PDAApplication.getDaggerComponents().inject(this);
+        Logger.write(sqLiteManagerDataProvider.toString());
     }
 
     public void clearData() {
@@ -169,5 +174,7 @@ public class Parser4PDA implements Parser4PDAViewable {
 
     private NewsDTO news = new NewsDTO();
     private DetailedNewDTO detailedNew = new DetailedNewDTO();
-    private SQLiteManagerDataProvider sqLiteManagerDataProvider = News4PDAApplication.getSqLiteManagerWriteable();
+//    private SQLiteManagerDataProvider sqLiteManagerDataProvider = News4PDAApplication.getSqLiteManagerWriteable();
+    @Inject
+    SQLiteManagerDataProvider sqLiteManagerDataProvider;
 }
