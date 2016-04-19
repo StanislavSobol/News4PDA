@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
+import com.gmal.sobol.i.stanislav.news4pda.dagger2components.Dagger2RealParser4PDAComponents;
+import com.gmal.sobol.i.stanislav.news4pda.dagger2components.DaggerDagger2RealParser4PDAComponents;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
 import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerProvider;
@@ -22,7 +24,7 @@ public class News4PDAApplication extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
-        daggerComponents = DaggerDaggerComponents.builder().news4PDAApplication(this).build();
+        dagger2RealParser4PDAComponents = DaggerDagger2RealParser4PDAComponents.builder().news4PDAApplication(this).build();
 
         instance = this;
         sqLiteManager = new SQLiteManagerProvider(this);
@@ -63,10 +65,10 @@ public class News4PDAApplication extends android.app.Application {
         return sqLiteManager;
     }
 
-    public static  DaggerComponents getDaggerComponents() {
-        return instance.daggerComponents;
+    public static Dagger2RealParser4PDAComponents getDaggerComponents() {
+        return instance.dagger2RealParser4PDAComponents;
     }
 
-    private DaggerComponents daggerComponents;
+    private Dagger2RealParser4PDAComponents dagger2RealParser4PDAComponents;
 
 }

@@ -25,6 +25,11 @@ public class Parser4PDA implements Parser4PDAViewable {
         Logger.write(sqLiteManagerDataProvider.toString());
     }
 
+    @Inject
+    public void setSQLiteManagerDataProvider(SQLiteManagerDataProvider sqLiteManagerDataProvider) {
+        this.sqLiteManagerDataProvider = sqLiteManagerDataProvider;
+    }
+
     public void clearData() {
         news.clear();
     }
@@ -174,7 +179,5 @@ public class Parser4PDA implements Parser4PDAViewable {
 
     private NewsDTO news = new NewsDTO();
     private DetailedNewDTO detailedNew = new DetailedNewDTO();
-//    private SQLiteManagerDataProvider sqLiteManagerDataProvider = News4PDAApplication.getSqLiteManagerWriteable();
-    @Inject
-    SQLiteManagerDataProvider sqLiteManagerDataProvider;
+    private SQLiteManagerDataProvider sqLiteManagerDataProvider;
 }
