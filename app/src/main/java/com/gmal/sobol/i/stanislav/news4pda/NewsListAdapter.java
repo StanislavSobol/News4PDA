@@ -12,6 +12,9 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
     private MainActivity mainActivity;
@@ -20,14 +23,15 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
 
         public Holder(View itemView) {
             super(itemView);
-            titleTextVew = (TextView) itemView.findViewById(R.id.titleTextVew);
-            descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
-            imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            ButterKnife.bind(this, itemView);
         }
 
-        private TextView titleTextVew;
-        private TextView descriptionTextView;
-        private ImageView imageView;
+        @Bind(R.id.titleTextVew)
+        TextView titleTextVew;
+        @Bind(R.id.descriptionTextView)
+        TextView descriptionTextView;
+        @Bind(R.id.imageView)
+        ImageView imageView;
     }
 
     public NewsListAdapter(NewsDTO news, MainActivity mainActivity) {

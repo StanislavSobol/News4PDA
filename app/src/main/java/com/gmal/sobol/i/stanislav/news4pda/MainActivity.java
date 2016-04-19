@@ -17,6 +17,9 @@ import android.widget.ProgressBar;
 import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -90,11 +93,8 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setVisibility(View.GONE);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        ButterKnife.bind(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        fullProgressBar = (ProgressBar) findViewById(R.id.fullProgressBar);
-        recyclerProgressBar = (ProgressBar) findViewById(R.id.recyclerProgressBar);
     }
 
     private void setTitleOnlineStatus() {
@@ -144,9 +144,13 @@ public class MainActivity extends AppCompatActivity
         parser4PDA.parseNewsPage(number, callbackBundle);
     }
 
+    @Bind(R.id.recyclerView)
+    RecyclerView recyclerView;
+    @Bind(R.id.fullProgressBar)
+    ProgressBar fullProgressBar;
+    @Bind(R.id.recyclerProgressBar)
+    ProgressBar recyclerProgressBar;
+
     private Parser4PDAViewable parser4PDA = News4PDAApplication.getParser4PDA();
-    private RecyclerView recyclerView;
-    private ProgressBar fullProgressBar;
-    private ProgressBar recyclerProgressBar;
     private int currentPageNumber = 0; // begins from 1
 }

@@ -1,8 +1,6 @@
 package com.gmal.sobol.i.stanislav.news4pda;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -18,6 +16,9 @@ import com.squareup.picasso.RequestCreator;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class DetailedNewScrollingActivity extends AppCompatActivity {
 
     @Override
@@ -27,6 +28,12 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
 
         initGraphics();
         requestData();
+    }
+
+    private void initGraphics() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
     }
 
     private void requestData() {
@@ -63,7 +70,6 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
 
         titleTextView.setText(detailedNewDTO.getTitle());
         descriptionTextView.setText(detailedNewDTO.getDescription());
-//        new DownloadImageTask(this, titleImageView, true, null).safeExecute(detailedNewDTO.getTitleImageURL());
 
         if (!detailedNewDTO.getTitleImageURL().isEmpty()) {
             RequestCreator requestCreator = Picasso.with(this)
@@ -74,12 +80,6 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
             }
             requestCreator.into(titleImageView);
         }
-
-
-//        Picasso.with(this)
-//                .load(detailedNewDTO.getTitleImageURL())
-//                .placeholder(R.drawable.ic_menu_gallery)
-//                .into(titleImageView);
 
         LinearLayout containerLayout = (LinearLayout) findViewById(R.id.containerLayout);
 
@@ -107,23 +107,14 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
         }
     }
 
-    private void initGraphics() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        fullProgressBar = (ProgressBar) findViewById(R.id.fullProgressBar);
-        scrolledContent = findViewById(R.id.scrolledContent);
-        scrolledContent.setVisibility(View.GONE);
-
-        titleTextView = (TextView) findViewById(R.id.titleTextView);
-        descriptionTextView = (TextView) findViewById(R.id.descriptionTextView);
-        titleImageView = (ImageView) findViewById(R.id.titleImageView);
-    }
-
-    private ProgressBar fullProgressBar;
-    private View scrolledContent;
-
-    private TextView titleTextView;
-    private TextView descriptionTextView;
-    private ImageView titleImageView;
+    @Bind(R.id.fullProgressBar)
+    ProgressBar fullProgressBar;
+    @Bind(R.id.scrolledContent)
+    View scrolledContent;
+    @Bind(R.id.titleTextView)
+    TextView titleTextView;
+    @Bind(R.id.descriptionTextView)
+    TextView descriptionTextView;
+    @Bind(R.id.titleImageView)
+    ImageView titleImageView;
 }
