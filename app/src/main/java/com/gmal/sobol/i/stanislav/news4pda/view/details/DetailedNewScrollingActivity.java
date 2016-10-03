@@ -1,4 +1,4 @@
-package com.gmal.sobol.i.stanislav.news4pda;
+package com.gmal.sobol.i.stanislav.news4pda.view.details;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +9,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.DetailedNewDTO;
+import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
+import com.gmal.sobol.i.stanislav.news4pda.MApplication;
+import com.gmal.sobol.i.stanislav.news4pda.R;
+import com.gmal.sobol.i.stanislav.news4pda.parser.DetailedNewDTO_old;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -20,6 +23,17 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class DetailedNewScrollingActivity extends AppCompatActivity {
+
+    @Bind(R.id.fullProgressBar)
+    ProgressBar fullProgressBar;
+    @Bind(R.id.scrolledContent)
+    View scrolledContent;
+    @Bind(R.id.titleTextView)
+    TextView titleTextView;
+    @Bind(R.id.descriptionTextView)
+    TextView descriptionTextView;
+    @Bind(R.id.titleImageView)
+    ImageView titleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,26 +70,26 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
         });
 
         String url = getIntent().getStringExtra("url");
-        News4PDAApplication.getParser4PDA().parseDetailedNew(url, callbackBundle);
+        MApplication.getParser4PDA().parseDetailedNew(url, callbackBundle);
     }
 
     private void setContent() {
-        DetailedNewDTO detailedNewDTO = News4PDAApplication.getParser4PDA().getParsedDetailedNewData();
+        DetailedNewDTO_old detailedNewDTOOld = MApplication.getParser4PDA().getParsedDetailedNewData();
 
-        if (detailedNewDTO.getTitle().isEmpty()) {
+        if (detailedNewDTOOld.getTitle().isEmpty()) {
             setTitle("Doesn't work offline yet, sorry :(");
         } else {
-            setTitle("4PDA - " + detailedNewDTO.getTitle());
+            setTitle("4PDA - " + detailedNewDTOOld.getTitle());
         }
 
-        titleTextView.setText(detailedNewDTO.getTitle());
-        descriptionTextView.setText(detailedNewDTO.getDescription());
+        titleTextView.setText(detailedNewDTOOld.getTitle());
+        descriptionTextView.setText(detailedNewDTOOld.getDescription());
 
-        if (!detailedNewDTO.getTitleImageURL().isEmpty()) {
+        if (!detailedNewDTOOld.getTitleImageURL().isEmpty()) {
             RequestCreator requestCreator = Picasso.with(this)
-                    .load(detailedNewDTO.getTitleImageURL())
+                    .load(detailedNewDTOOld.getTitleImageURL())
                     .placeholder(R.drawable.ic_menu_gallery);
-            if (!News4PDAApplication.isOnlineWithToast(false)) {
+            if (!MApplication.isOnlineWithToast(false)) {
                 requestCreator.networkPolicy(NetworkPolicy.OFFLINE);
             }
             requestCreator.into(titleImageView);
@@ -83,8 +97,8 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
 
         LinearLayout containerLayout = (LinearLayout) findViewById(R.id.containerLayout);
 
-        List<DetailedNewDTO.ContentItem> items = detailedNewDTO.getContentItems();
-        for (DetailedNewDTO.ContentItem item : items) {
+        List<DetailedNewDTO_old.ContentItem_old> items = detailedNewDTOOld.getContentItemOlds();
+        for (DetailedNewDTO_old.ContentItem_old item : items) {
             View view;
 
             if (item.isImage()) {
@@ -106,15 +120,4 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
             containerLayout.addView(view);
         }
     }
-
-    @Bind(R.id.fullProgressBar)
-    ProgressBar fullProgressBar;
-    @Bind(R.id.scrolledContent)
-    View scrolledContent;
-    @Bind(R.id.titleTextView)
-    TextView titleTextView;
-    @Bind(R.id.descriptionTextView)
-    TextView descriptionTextView;
-    @Bind(R.id.titleImageView)
-    ImageView titleImageView;
 }

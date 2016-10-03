@@ -1,4 +1,4 @@
-package com.gmal.sobol.i.stanislav.news4pda;
+package com.gmal.sobol.i.stanislav.news4pda.view.main;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,37 +7,31 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
+import com.gmal.sobol.i.stanislav.news4pda.MApplication;
+import com.gmal.sobol.i.stanislav.news4pda.R;
+import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
+class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
     private MainActivity mainActivity;
+    private List<ItemDTO> items = new ArrayList<>();
 
-    public static class Holder extends RecyclerView.ViewHolder {
-
-        public Holder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-
-        @Bind(R.id.titleTextVew)
-        TextView titleTextVew;
-        @Bind(R.id.descriptionTextView)
-        TextView descriptionTextView;
-        @Bind(R.id.imageView)
-        ImageView imageView;
+    public NewsListAdapter(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
 
-    public NewsListAdapter(NewsDTO news, MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
-        this.news = new NewsDTO();
-        this.news.addAll(news);
+    void addItem(ItemDTO itemDTO) {
+        items.add(itemDTO);
+        notifyItemInserted(items.size() - 1);
     }
 
     @Override
@@ -49,7 +43,8 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
 
     @Override
     public void onBindViewHolder(Holder holder, final int position) {
-        final NewsDTO.Item item = news.get(position);
+        final ItemDTO item = items.get(position);
+
         if (item != null) {
 
             holder.titleTextVew.setText(item.getTitle());
@@ -59,7 +54,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
                 RequestCreator requestCreator = Picasso.with(mainActivity)
                         .load(item.getImageURL())
                         .placeholder(R.drawable.ic_menu_gallery);
-                if (!News4PDAApplication.isOnlineWithToast(false)) {
+                if (!MApplication.isOnlineWithToast(false)) {
                     requestCreator.networkPolicy(NetworkPolicy.OFFLINE);
                 }
                 requestCreator.into(holder.imageView);
@@ -79,20 +74,33 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder
 
     @Override
     public int getItemCount() {
-        return news.size();
+        return items.size();
     }
 
-    boolean addNews(NewsDTO srcData) {
-        if (srcData.size() > news.size()) {
-            int left = news.size();
-            for (int i = left; i < srcData.size(); i++) {
-                news.add(srcData.get(i));
-            }
-            notifyDataSetChanged();
-            return true;
+//    boolean addNews(NewsDTO_old srcData) {
+//        if (srcData.size() > items.size()) {
+//            int left = items.size();
+//            for (int i = left; i < srcData.size(); i++) {
+//                items.add(srcData.get(i));
+//            }
+//            notifyDataSetChanged();
+//            return true;
+//        }
+//        return false;
+//    }
+
+    static class Holder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.titleTextVew)
+        TextView titleTextVew;
+        @Bind(R.id.descriptionTextView)
+        TextView descriptionTextView;
+        @Bind(R.id.imageView)
+        ImageView imageView;
+
+        Holder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
         }
-        return false;
     }
-
-    private NewsDTO news;
 }

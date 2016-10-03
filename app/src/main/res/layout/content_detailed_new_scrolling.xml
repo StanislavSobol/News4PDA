@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/common_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.gmal.sobol.i.stanislav.news4pda.DetailedNewScrollingActivity"
+    tools:context="com.gmal.sobol.i.stanislav.news4pda.view.details.DetailedNewScrollingActivity"
     tools:showIn="@layout/activity_detailed_new_scrolling">
 
     <LinearLayout
@@ -17,8 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/common_margin"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/common_margin">
 
             <TextView
                 android:id="@+id/titleTextView"
@@ -31,8 +31,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/common_margin"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/common_margin">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -59,24 +59,24 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:padding="@dimen/common_margin"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/common_margin">
 
             <TextView
+                android:id="@+id/descriptionTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/descriptionTextView" />
+                android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/containerLayout"
-            android:orientation="vertical"
-            android:padding="@dimen/common_margin"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/common_margin">
 
         </LinearLayout>
 

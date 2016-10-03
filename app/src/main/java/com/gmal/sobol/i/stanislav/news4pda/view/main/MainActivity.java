@@ -1,4 +1,4 @@
-package com.gmal.sobol.i.stanislav.news4pda;
+package com.gmal.sobol.i.stanislav.news4pda.view.main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,22 +13,58 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
-import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable;
+import com.gmal.sobol.i.stanislav.news4pda.Logger;
+import com.gmal.sobol.i.stanislav.news4pda.MApplication;
+import com.gmal.sobol.i.stanislav.news4pda.R;
+import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
+import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable_old;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.MainActivityPresenter;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.MainActivityPresenterForActivity;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.PresenterUser;
+import com.gmal.sobol.i.stanislav.news4pda.view.BaseActivity;
+import com.gmal.sobol.i.stanislav.news4pda.view.details.DetailedNewScrollingActivity;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity
+        implements NavigationView.OnNavigationItemSelectedListener, MainView, PresenterUser<MainActivityPresenterForActivity> {
+
+    @Bind(R.id.recyclerView)
+    RecyclerView recyclerView;
+    @Bind(R.id.fullProgressBar)
+    ProgressBar fullProgressBar;
+    @Bind(R.id.recyclerProgressBar)
+    ProgressBar recyclerProgressBar;
+
+    private Parser4PDAViewable_old parser4PDA = MApplication.getParser4PDA();
+    private int currentPageNumber = 0; // begins from 1
+    private int loadingPageNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MApplication.getInstance().createComponents(true);
+        final boolean realStart = isRealStart();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initGraphics();
-        parser4PDA.clearData();
-        loadPage(1);
+
+        loadPage(1, !realStart);
+
+        if (realStart) {
+//            getCastedPresenter().setMediatorMember();
+//            startService(new Intent(this, CheckNewService.class));
+//            GAManager.sendApplicationStartAction();
+        }
+
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//        initGraphics();
+//        parser4PDA.clearData();
+//        loadPage(1);
     }
 
     @Override
@@ -67,12 +102,11 @@ public class MainActivity extends AppCompatActivity
 
     void checkForNextPage(int position) {
         if (position + 1 >= parser4PDA.getParsedNewsData().size()) {
-            loadPage(currentPageNumber + 1);
-
+            loadPage(currentPageNumber + 1, false);
         }
     }
 
-    void showDetailedNew(NewsDTO.Item item) {
+    void showDetailedNew(ItemDTO item) {
         Intent intent = new Intent(MainActivity.this, DetailedNewScrollingActivity.class);
         intent.putExtra("url", item.getDetailURL());
         startActivity(intent);
@@ -95,62 +129,50 @@ public class MainActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new NewsListAdapter(this));
+
     }
 
     private void setTitleOnlineStatus() {
         String title = getResources().getString(R.string.app_name);
-        if (News4PDAApplication.isOnlineWithToast(true)) {
+        if (MApplication.isOnlineWithToast(true)) {
             setTitle("[ONLINE] " + title);
         } else {
             setTitle("[OFFLINE] " + title);
         }
     }
 
-    private void loadPage(final int number) {
+    private void loadPage(final int number, boolean fromCache) {
         setTitleOnlineStatus();
 
-        if (number > 1) {
-            recyclerProgressBar.setVisibility(View.VISIBLE);
-        }
-
-        CallbackBundle callbackBundle = new CallbackBundle();
-
-        callbackBundle.setResult(new Runnable() {
-            @Override
-            public void run() {
-                boolean added;
-                if (recyclerView.getAdapter() == null) {
-                    recyclerView.setAdapter(new NewsListAdapter(parser4PDA.getParsedNewsData(), MainActivity.this));
-                    added = true;
-                } else {
-                    added =
-                            ((NewsListAdapter) recyclerView.getAdapter()).addNews(parser4PDA.getParsedNewsData());
-                }
-                fullProgressBar.setVisibility(View.GONE);
-                recyclerProgressBar.setVisibility(View.GONE);
-                if (added) {
-                    currentPageNumber = number;
-                }
-            }
-        });
-
-        callbackBundle.setError(new Runnable() {
-            @Override
-            public void run() {
-                // TODO notify about the error
-            }
-        });
-
-        parser4PDA.parseNewsPage(number, callbackBundle);
+        MApplication.isOnlineWithToast(true);
+        loadingPageNum = number;
+        getCastedPresenter().loadPage(number, fromCache);
     }
 
-    @Bind(R.id.recyclerView)
-    RecyclerView recyclerView;
-    @Bind(R.id.fullProgressBar)
-    ProgressBar fullProgressBar;
-    @Bind(R.id.recyclerProgressBar)
-    ProgressBar recyclerProgressBar;
+    @Override
+    public MainActivityPresenterForActivity createPresenter() {
+        return new MainActivityPresenter();
+    }
 
-    private Parser4PDAViewable parser4PDA = News4PDAApplication.getParser4PDA();
-    private int currentPageNumber = 0; // begins from 1
+    @Override
+    public MainActivityPresenterForActivity getCastedPresenter() {
+        return (MainActivityPresenterForActivity) getPresenter();
+    }
+
+    @Override
+    public void buildPage(List<ItemDTO> itemsDTO, boolean fromCache) {
+
+    }
+
+    @Override
+    public void addItem(ItemDTO itemDTO) {
+        Logger.write("MainActivity::addItem");
+        fullProgressBar.setVisibility(View.GONE);
+        getRecyclerViewAdapter().addItem(itemDTO);
+    }
+
+    private NewsListAdapter getRecyclerViewAdapter() {
+        return ((NewsListAdapter) recyclerView.getAdapter());
+    }
 }

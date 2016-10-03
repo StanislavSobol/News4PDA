@@ -7,15 +7,21 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO;
+import com.gmal.sobol.i.stanislav.news4pda.parser.NewsDTO_old;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
+
+    private SQLiteDatabase database;
+
+    // SQLiteManagerDataProvider -------------------------------------------------------------------
+    private Context context;
+    private Map<String, Bitmap> imagesPool = new HashMap<>();
+
+    // INNER ---------------------------------------------------------------------------------------
 
     public SQLiteManagerProvider(Context context) {
         this.context = context;
@@ -23,9 +29,7 @@ public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
         loadImagesPool();
     }
 
-    // SQLiteManagerDataProvider -------------------------------------------------------------------
-
-    synchronized public void addNewsItemDTO(NewsDTO.Item item, String srcURL) {
+    synchronized public void addNewsItemDTO(NewsDTO_old.Item item, String srcURL) {
         String[] strings = new String[]
                 {
                         item.getDetailURL(),
@@ -37,7 +41,7 @@ public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
         database.execSQL("insert or replace into news(url,src_url,title,image_url,description) values (?,?,?,?,?)", strings);
     }
 
-    synchronized public void loadPage(NewsDTO newsDTO, String srcURL) {
+    synchronized public void loadPage(NewsDTO_old newsDTOOld, String srcURL) {
 
         Cursor cursor =
                 database.rawQuery("select url,title,image_url,description,src_url from news where src_url = ?",
@@ -45,20 +49,18 @@ public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
 
         if (cursor.moveToFirst()) {
             do {
-                NewsDTO.Item item = new NewsDTO.Item();
+                NewsDTO_old.Item item = new NewsDTO_old.Item();
 
                 item.setDetailURL(cursor.getString(0));
                 item.setTitle(cursor.getString(1));
                 item.setImageURL(cursor.getString(2));
                 item.setDescription(cursor.getString(3));
 
-                newsDTO.add(item);
+                newsDTOOld.add(item);
             } while (cursor.moveToNext());
         }
         cursor.close();
     }
-
-    // INNER ---------------------------------------------------------------------------------------
 
     private String getImagesPath() {
         return context.getFilesDir().toString() + "/";
@@ -87,6 +89,9 @@ public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
     }
 
     private class DBHelper extends SQLiteOpenHelper {
+
+        private static final String DATABASE_NAME = "db";
+        private static final int DATABASE_VERSION = 11;
 
         public DBHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -117,12 +122,5 @@ public class SQLiteManagerProvider implements SQLiteManagerDataProvider {
             database.execSQL("drop table if exists detailed_new");
             onCreate(database);
         }
-
-        private static final String DATABASE_NAME = "db";
-        private static final int DATABASE_VERSION = 11;
     }
-
-    private SQLiteDatabase database;
-    private Context context;
-    private Map<String, Bitmap> imagesPool = new HashMap<>();
 }
