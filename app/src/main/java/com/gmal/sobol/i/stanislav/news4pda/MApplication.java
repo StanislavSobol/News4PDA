@@ -11,10 +11,6 @@ import com.gmal.sobol.i.stanislav.news4pda.data.parser.BaseParser;
 import com.gmal.sobol.i.stanislav.news4pda.data.parser.New4PDAParser;
 import com.gmal.sobol.i.stanislav.news4pda.di.DaggerRealComponents;
 import com.gmal.sobol.i.stanislav.news4pda.di.RealComponents;
-import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable_old;
-import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDA_old;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerDataProvider;
-import com.gmal.sobol.i.stanislav.news4pda.sqlitemanager.SQLiteManagerProvider;
 
 import javax.inject.Singleton;
 
@@ -27,14 +23,9 @@ public class MApplication extends android.app.Application {
 
     @Getter
     private static MApplication instance;
-    private static Parser4PDAViewable_old parser4PDA;
-    private static SQLiteManagerProvider sqLiteManager;
     private RealComponents dagger2RealComponents;
     private boolean mainActivityIsAlive;
 
-    public static Parser4PDAViewable_old getParser4PDA() {
-        return parser4PDA;
-    }
 
     public static boolean isOnlineWithToast(boolean showToastIfNoInet) {
         ConnectivityManager cm =
@@ -62,15 +53,8 @@ public class MApplication extends android.app.Application {
         dagger2RealComponents = DaggerRealComponents.builder().mApplication(this).build();
 
         instance = this;
-        sqLiteManager = new SQLiteManagerProvider(this);
-        parser4PDA = new Parser4PDA_old();
     }
 
-    @Provides
-    @Singleton
-    SQLiteManagerDataProvider providesSQLiteManagerProvider() {
-        return sqLiteManager;
-    }
 
     @Provides
     @Singleton
