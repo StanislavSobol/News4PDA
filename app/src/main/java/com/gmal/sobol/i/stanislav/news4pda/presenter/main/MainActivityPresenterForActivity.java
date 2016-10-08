@@ -1,4 +1,4 @@
-package com.gmal.sobol.i.stanislav.news4pda.presenter;
+package com.gmal.sobol.i.stanislav.news4pda.presenter.main;
 
 /**
  * Created by VZ on 16.08.2016.

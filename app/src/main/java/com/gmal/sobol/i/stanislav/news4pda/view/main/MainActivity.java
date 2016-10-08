@@ -18,11 +18,11 @@ import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.R;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
 import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable_old;
-import com.gmal.sobol.i.stanislav.news4pda.presenter.MainActivityPresenter;
-import com.gmal.sobol.i.stanislav.news4pda.presenter.MainActivityPresenterForActivity;
 import com.gmal.sobol.i.stanislav.news4pda.presenter.PresenterUser;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.main.MainActivityPresenter;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.main.MainActivityPresenterForActivity;
 import com.gmal.sobol.i.stanislav.news4pda.view.BaseActivity;
-import com.gmal.sobol.i.stanislav.news4pda.view.details.DetailedNewScrollingActivity;
+import com.gmal.sobol.i.stanislav.news4pda.view.details.DetailedActivity;
 
 import java.util.List;
 
@@ -54,17 +54,11 @@ public class MainActivity extends BaseActivity
 
         loadPage(1, !realStart);
 
-        if (realStart) {
-//            getCastedPresenter().setMediatorMember();
-//            startService(new Intent(this, CheckNewService.class));
-//            GAManager.sendApplicationStartAction();
-        }
-
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//        initGraphics();
-//        parser4PDA.clearData();
-//        loadPage(1);
+//        if (realStart) {
+////            getCastedPresenter().setMediatorMember();
+////            startService(new Intent(this, CheckNewService.class));
+////            GAManager.sendApplicationStartAction();
+//        }
     }
 
     @Override
@@ -107,7 +101,7 @@ public class MainActivity extends BaseActivity
     }
 
     void showDetailedNew(ItemDTO item) {
-        Intent intent = new Intent(MainActivity.this, DetailedNewScrollingActivity.class);
+        Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
         intent.putExtra("url", item.getDetailURL());
         startActivity(intent);
     }
@@ -162,7 +156,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void buildPage(List<ItemDTO> itemsDTO, boolean fromCache) {
-
+        Logger.write("MainActivity::buildPage");
+        currentPageNumber++;
     }
 
     @Override

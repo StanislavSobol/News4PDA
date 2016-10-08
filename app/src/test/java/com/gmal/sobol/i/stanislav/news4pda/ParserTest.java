@@ -29,12 +29,7 @@ public class ParserTest {
                 final ItemDTO itemDTO = items.get(j);
                 assertTrue(itemDTO.isValid());
 
-                DetailsMainDTO detailsMainDTO = null;
-                try {
-                    detailsMainDTO = parser.getDetailedData(itemDTO.getDetailURL(), null);
-                } catch (java.lang.IndexOutOfBoundsException e) {
-                    assertTrue(true);
-                }
+                final DetailsMainDTO detailsMainDTO = parser.getDetailedData(itemDTO.getDetailURL(), null);
 
                 assertTrue(detailsMainDTO != null);
                 assertTrue(detailsMainDTO.isValid());

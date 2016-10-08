@@ -9,11 +9,11 @@ import rx.Subscription;
 
 abstract public class BasePresenter {
 
-    Subscription subscription;
+    protected Subscription subscription;
     @Getter
     private BaseView view;
 
-    BasePresenter() {
+    public BasePresenter() {
         dagger2Inject();
     }
 

@@ -1,7 +1,6 @@
 package com.gmal.sobol.i.stanislav.news4pda.view.details;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,7 +11,13 @@ import android.widget.TextView;
 import com.gmal.sobol.i.stanislav.news4pda.CallbackBundle;
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.R;
+import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsItemDTO;
+import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsMainDTO;
 import com.gmal.sobol.i.stanislav.news4pda.parser.DetailedNewDTO_old;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.PresenterUser;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.details.DetailedActivityPresenter;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.details.DetailedActivityPresenterForActivity;
+import com.gmal.sobol.i.stanislav.news4pda.view.BaseActivity;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -22,7 +27,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class DetailedNewScrollingActivity extends AppCompatActivity {
+public class DetailedActivity extends BaseActivity implements DetailedView, PresenterUser<DetailedActivityPresenterForActivity> {
 
     @Bind(R.id.fullProgressBar)
     ProgressBar fullProgressBar;
@@ -37,11 +42,19 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final boolean realStart = isRealStart();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_new_scrolling);
 
         initGraphics();
-        requestData();
+//        requestData();
+
+        MApplication.isOnlineWithToast(true);
+
+        final String url = getIntent().getStringExtra("url");
+
+        getCastedPresenter().loadData(!realStart, url);
     }
 
     private void initGraphics() {
@@ -99,6 +112,60 @@ public class DetailedNewScrollingActivity extends AppCompatActivity {
 
         List<DetailedNewDTO_old.ContentItem_old> items = detailedNewDTOOld.getContentItemOlds();
         for (DetailedNewDTO_old.ContentItem_old item : items) {
+            View view;
+
+            if (item.isImage()) {
+                view = getLayoutInflater().inflate(R.layout.detailed_new_image_content, null);
+                ImageView imageView = (ImageView) view.findViewById(R.id.detailedNewContentImageView);
+
+                if (!item.getContent().isEmpty()) {
+                    Picasso.with(this)
+                            .load(item.getContent())
+                            .placeholder(R.drawable.ic_menu_gallery)
+                            .into(imageView);
+                }
+            } else {
+                view = getLayoutInflater().inflate(R.layout.detailed_new_text_content, null);
+                TextView textView = (TextView) view.findViewById(R.id.detailedNewContentTextView);
+                textView.setText(item.getContent());
+            }
+
+            containerLayout.addView(view);
+        }
+    }
+
+    @Override
+    public DetailedActivityPresenterForActivity createPresenter() {
+        return new DetailedActivityPresenter();
+    }
+
+    @Override
+    public DetailedActivityPresenterForActivity getCastedPresenter() {
+        return (DetailedActivityPresenterForActivity) getPresenter();
+    }
+
+    @Override
+    public void buildPage(DetailsMainDTO data) {
+        fullProgressBar.setVisibility(View.GONE);
+        scrolledContent.setVisibility(View.VISIBLE);
+
+        setTitle(data.getTitle());
+        titleTextView.setText(data.getTitle());
+        descriptionTextView.setText(data.getDescription());
+
+        if (!data.getTitleImageURL().isEmpty()) {
+            RequestCreator requestCreator = Picasso.with(this)
+                    .load(data.getTitleImageURL())
+                    .placeholder(R.drawable.ic_menu_gallery);
+            if (!MApplication.isOnlineWithToast(false)) {
+                requestCreator.networkPolicy(NetworkPolicy.OFFLINE);
+            }
+            requestCreator.into(titleImageView);
+        }
+
+        final LinearLayout containerLayout = (LinearLayout) findViewById(R.id.containerLayout);
+
+        for (DetailsItemDTO item : data.getItems()) {
             View view;
 
             if (item.isImage()) {

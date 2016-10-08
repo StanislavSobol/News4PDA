@@ -1,8 +1,9 @@
-package com.gmal.sobol.i.stanislav.news4pda.presenter;
+package com.gmal.sobol.i.stanislav.news4pda.presenter.main;
 
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.data.DataProviderPresentable;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
+import com.gmal.sobol.i.stanislav.news4pda.presenter.BasePresenter;
 import com.gmal.sobol.i.stanislav.news4pda.view.main.MainView;
 
 import java.util.ArrayList;
@@ -23,7 +24,9 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
 
     @Inject
     DataProviderPresentable dataProviderPresentable;
-    List<ItemDTO> itemsDTO = new ArrayList<>();
+
+    private List<ItemDTO> itemsDTO = new ArrayList<>();
+
     private boolean loadingIsLocked;
     private int pageNum;
 
@@ -76,7 +79,6 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
 
                         @Override
                         public void onError(Throwable e) {
-                            //GAManager.sendCaughtThrowable("MainActivityPresenter::loadPage(...)", e);
                             e.printStackTrace();
                             loadingIsLocked = false;
                         }

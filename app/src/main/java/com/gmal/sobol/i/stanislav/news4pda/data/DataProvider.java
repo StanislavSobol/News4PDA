@@ -2,6 +2,7 @@ package com.gmal.sobol.i.stanislav.news4pda.data;
 
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.data.parser.New4PDAParser;
+import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsMainDTO;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
 
 import java.util.List;
@@ -30,7 +31,14 @@ public class DataProvider implements DataProviderPresentable {
         } else {
             return null;
         }
+    }
 
+    public DetailsMainDTO getDetailedData(boolean isOnline, String url, Subscriber<? super DetailsMainDTO> subscriber) {
+        if (isOnline) {
+            return new4PDAParser.getDetailedData(url, subscriber);
+        } else {
+            return null;
+        }
     }
 
     @Override

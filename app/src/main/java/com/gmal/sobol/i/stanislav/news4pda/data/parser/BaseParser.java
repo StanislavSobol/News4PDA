@@ -77,23 +77,25 @@ public class BaseParser implements New4PDAParser {
 
             final Elements ps = document.getElementsByTag("p");
             for (Element p : ps) {
-                final DetailsItemDTO detailsItemDTO = new DetailsItemDTO();
+                final DetailsItemDTO item = new DetailsItemDTO();
 
                 if (p.attr("style").equals("text-align: justify;")) {
-                    detailsItemDTO.setImage(false);
-                    detailsItemDTO.setContent(p.text());
+                    item.setImage(false);
+                    item.setContent(p.text());
                 } else if (p.attr("style").equals("text-align: center;")) {
-                    detailsItemDTO.setImage(true);
+                    item.setImage(true);
                     try {
-                        detailsItemDTO.setContent(p.getElementsByTag("a").get(0).getElementsByTag("img").attr("src"));
+                        item.setContent(p.getElementsByTag("a").get(0).getElementsByTag("img").attr("src"));
                     } catch (java.lang.IndexOutOfBoundsException e) {
                         e.printStackTrace();
                         // TODO To the error report
-                        detailsItemDTO.setContent("");
+                        item.setContent("");
                     }
                 }
 
-                result.getItems().add(detailsItemDTO);
+                if (!item.getContent().isEmpty()) {
+                    result.getItems().add(item);
+                }
             }
 
         } catch (IOException e) {

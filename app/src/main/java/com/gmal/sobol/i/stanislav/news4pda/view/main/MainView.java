@@ -9,7 +9,7 @@ import java.util.List;
  * Created by VZ on 16.08.2016.
  */
 public interface MainView extends BaseView {
-    void buildPage(List<ItemDTO> itemsDTO, boolean b);
+    void buildPage(List<ItemDTO> itemsDTO, boolean fromCache);
 
     void addItem(ItemDTO itemDTO);
 }

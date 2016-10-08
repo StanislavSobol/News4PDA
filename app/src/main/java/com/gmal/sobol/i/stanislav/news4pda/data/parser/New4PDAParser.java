@@ -1,5 +1,6 @@
 package com.gmal.sobol.i.stanislav.news4pda.data.parser;
 
+import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsMainDTO;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
 
 import java.util.List;
@@ -12,4 +13,6 @@ import rx.Subscriber;
 public interface New4PDAParser {
 
     List<ItemDTO> getPageData(int pageNum, Subscriber<? super ItemDTO> subscriber);
+
+    DetailsMainDTO getDetailedData(String url, Subscriber<? super DetailsMainDTO> subscriber);
 }
