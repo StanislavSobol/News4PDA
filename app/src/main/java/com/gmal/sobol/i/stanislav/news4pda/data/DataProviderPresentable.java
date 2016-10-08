@@ -18,4 +18,6 @@ public interface DataProviderPresentable {
     DetailsMainDTO getDetailedData(boolean isOnline, String url, Subscriber<? super DetailsMainDTO> subscriber);
 
     void writeItemsDTO(List<ItemDTO> itemsDTO);
+
+    void writeDetailsMainDTO(DetailsMainDTO detailsMainDTO);
 }

@@ -9,6 +9,9 @@ import com.gmal.sobol.i.stanislav.news4pda.data.DataProvider;
 import com.gmal.sobol.i.stanislav.news4pda.data.DataProviderPresentable;
 import com.gmal.sobol.i.stanislav.news4pda.data.parser.BaseParser;
 import com.gmal.sobol.i.stanislav.news4pda.data.parser.New4PDAParser;
+import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.SQLORMManager;
+import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.SQLiteReader;
+import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.SQLiteWriter;
 import com.gmal.sobol.i.stanislav.news4pda.di.DaggerRealComponents;
 import com.gmal.sobol.i.stanislav.news4pda.di.RealComponents;
 
@@ -25,6 +28,7 @@ public class MApplication extends android.app.Application {
     private static MApplication instance;
     private RealComponents dagger2RealComponents;
     private boolean mainActivityIsAlive;
+    private SQLORMManager sqlLiteQRMManager;
 
 
     public static boolean isOnlineWithToast(boolean showToastIfNoInet) {
@@ -66,10 +70,22 @@ public class MApplication extends android.app.Application {
         return new DataProvider();
     }
 
+    @Provides
+    @Singleton
+    SQLiteWriter providesSQLiteWriter() {
+        return sqlLiteQRMManager;
+    }
+
+    @Provides
+    @Singleton
+    SQLiteReader providesSQLiteReader() {
+        return sqlLiteQRMManager;
+    }
+
     public void createComponents(boolean callFromMainActivity) {
         if (callFromMainActivity || !mainActivityIsAlive) {
             dagger2RealComponents = DaggerRealComponents.builder().mApplication(this).build();
-//            sqlLiteQRMManager = new SQLORMManager();
+            sqlLiteQRMManager = new SQLORMManager();
         }
 
         if (callFromMainActivity) {

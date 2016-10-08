@@ -78,9 +78,7 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
                             Logger.write("onCompleted()");
 
                             getCastedView().buildPage(itemsDTO, false);
-                            if (MApplication.isOnlineWithToast(false)) {
-                                dataProviderPresentable.writeItemsDTO(itemsDTO);
-                            }
+                            dataProviderPresentable.writeItemsDTO(itemsDTO);
                             loadingIsLocked = false;
                             currentPageNumber++;
                         }

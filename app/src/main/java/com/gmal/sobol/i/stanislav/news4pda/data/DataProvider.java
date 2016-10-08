@@ -2,6 +2,8 @@ package com.gmal.sobol.i.stanislav.news4pda.data;
 
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.data.parser.New4PDAParser;
+import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.SQLiteReader;
+import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.SQLiteWriter;
 import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsMainDTO;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
 
@@ -20,6 +22,12 @@ public class DataProvider implements DataProviderPresentable {
     @Inject
     New4PDAParser new4PDAParser;
 
+    @Inject
+    SQLiteReader sqLiteReader;
+
+    @Inject
+    SQLiteWriter sqLiteWriter;
+
     public DataProvider() {
         MApplication.getDaggerComponents().inject(this);
     }
@@ -29,7 +37,7 @@ public class DataProvider implements DataProviderPresentable {
         if (isOnline) {
             return new4PDAParser.getPageData(pageNum, subscriber);
         } else {
-            return null;
+            return sqLiteReader.getPageData(pageNum, subscriber);
         }
     }
 
@@ -37,12 +45,17 @@ public class DataProvider implements DataProviderPresentable {
         if (isOnline) {
             return new4PDAParser.getDetailedData(url, subscriber);
         } else {
-            return null;
+            return sqLiteReader.getDetailedData(url, subscriber);
         }
     }
 
     @Override
     public void writeItemsDTO(List<ItemDTO> itemsDTO) {
+        sqLiteWriter.writeItemsDTO(itemsDTO);
+    }
 
+    @Override
+    public void writeDetailsMainDTO(DetailsMainDTO detailsMainDTO) {
+        sqLiteWriter.writeDetailsMainDTO(detailsMainDTO);
     }
 }
