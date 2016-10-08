@@ -35,7 +35,7 @@ public class MApplication extends android.app.Application {
         boolean result = netInfo != null && netInfo.isConnectedOrConnecting();
 
         if (showToastIfNoInet && !result) {
-            String s = instance.getResources().getString(R.string.error_no_internet);
+            final String s = instance.getResources().getString(R.string.error_no_internet);
             Toast.makeText(instance, s, Toast.LENGTH_LONG).show();
         }
 
@@ -49,9 +49,7 @@ public class MApplication extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         dagger2RealComponents = DaggerRealComponents.builder().mApplication(this).build();
-
         instance = this;
     }
 
