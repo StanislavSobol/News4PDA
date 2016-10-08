@@ -63,6 +63,7 @@ public class BaseParser implements New4PDAParser {
 
     public DetailsMainDTO getDetailedData(String url, Subscriber<? super DetailsMainDTO> subscriber) {
         final DetailsMainDTO result = new DetailsMainDTO();
+        result.setUrl(url);
 
         final Document document;
         try {

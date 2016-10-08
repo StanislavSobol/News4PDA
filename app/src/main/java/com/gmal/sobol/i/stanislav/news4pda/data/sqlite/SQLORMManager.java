@@ -4,7 +4,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
+import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.dao.DetailsDAO;
 import com.gmal.sobol.i.stanislav.news4pda.data.sqlite.dao.ItemDAO;
+import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsItemDTO;
 import com.gmal.sobol.i.stanislav.news4pda.dto.DetailsMainDTO;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -26,9 +28,10 @@ import rx.schedulers.Schedulers;
 public class SQLORMManager extends OrmLiteSqliteOpenHelper implements SQLiteWriter, SQLiteReader {
 
     private static final String DATABASE_NAME = "data.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 7;
 
     private ItemDAO itemDAO;
+    private DetailsDAO detailsDAO;
 
     public SQLORMManager() {
         super(MApplication.getInstance().getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,6 +42,8 @@ public class SQLORMManager extends OrmLiteSqliteOpenHelper implements SQLiteWrit
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
             TableUtils.createTable(connectionSource, ItemDTO.class);
+            TableUtils.createTable(connectionSource, DetailsMainDTO.class);
+            TableUtils.createTable(connectionSource, DetailsItemDTO.class);
         } catch (SQLException e) {
             Logger.writeError(e.getMessage());
             throw new RuntimeException(e);
@@ -49,6 +54,8 @@ public class SQLORMManager extends OrmLiteSqliteOpenHelper implements SQLiteWrit
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
             TableUtils.dropTable(connectionSource, ItemDTO.class, true);
+            TableUtils.dropTable(connectionSource, DetailsMainDTO.class, true);
+            TableUtils.dropTable(connectionSource, DetailsItemDTO.class, true);
 
             onCreate(database, connectionSource);
         } catch (SQLException e) {
@@ -80,7 +87,20 @@ public class SQLORMManager extends OrmLiteSqliteOpenHelper implements SQLiteWrit
 
     @Override
     public DetailsMainDTO getDetailedData(String url, Subscriber<? super DetailsMainDTO> subscriber) {
-        return null;
+        DetailsMainDTO result = null;
+        try {
+            result = getDetailsDAO().queryForId(url);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (subscriber != null) {
+                subscriber.onError(e);
+            }
+        }
+        if (subscriber != null) {
+            subscriber.onNext(result);
+            subscriber.onCompleted();
+        }
+        return result;
     }
 
     @Override
@@ -105,8 +125,22 @@ public class SQLORMManager extends OrmLiteSqliteOpenHelper implements SQLiteWrit
     }
 
     @Override
-    public void writeDetailsMainDTO(DetailsMainDTO detailsMainDTO) {
+    public void writeDetailsMainDTO(final DetailsMainDTO detailsMainDTO) {
+        Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                try {
+                    for (DetailsItemDTO itemDTO : detailsMainDTO.getItems()) {
+                        itemDTO.setDetailsMainDTO(detailsMainDTO);
+                    }
 
+                    getDetailsDAO().createOrUpdate(detailsMainDTO);
+                } catch (SQLException e) {
+                    Logger.writeError(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }).subscribeOn(Schedulers.io()).subscribe();
     }
 
     private ItemDAO getItemDAO() throws SQLException {
@@ -116,4 +150,10 @@ public class SQLORMManager extends OrmLiteSqliteOpenHelper implements SQLiteWrit
         return itemDAO;
     }
 
+    private DetailsDAO getDetailsDAO() throws SQLException {
+        if (detailsDAO == null) {
+            detailsDAO = new DetailsDAO(connectionSource, DetailsMainDTO.class);
+        }
+        return detailsDAO;
+    }
 }

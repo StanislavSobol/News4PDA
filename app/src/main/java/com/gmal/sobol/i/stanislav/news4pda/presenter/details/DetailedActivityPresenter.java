@@ -63,7 +63,9 @@ public class DetailedActivityPresenter extends BasePresenter implements Detailed
                         @Override
                         public void onNext(DetailsMainDTO detailsMainDTO) {
                             getCastedView().buildPage(detailsMainDTO);
-                            dataProviderPresentable.writeDetailsMainDTO(detailsMainDTO);
+                            if (MApplication.isOnlineWithToast(false)) {
+                                dataProviderPresentable.writeDetailsMainDTO(detailsMainDTO);
+                            }
                         }
                     });
 
