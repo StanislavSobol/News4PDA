@@ -36,10 +36,6 @@ public class MApplication extends android.app.Application {
         return parser4PDA;
     }
 
-    public static SQLiteManagerDataProvider getSqLiteManagerWriteable() {
-        return sqLiteManager;
-    }
-
     public static boolean isOnlineWithToast(boolean showToastIfNoInet) {
         ConnectivityManager cm =
                 (ConnectivityManager) instance.getSystemService(Context.CONNECTIVITY_SERVICE);

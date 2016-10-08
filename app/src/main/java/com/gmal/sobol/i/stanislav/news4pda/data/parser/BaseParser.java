@@ -54,6 +54,10 @@ public class BaseParser implements New4PDAParser {
             return null;
         }
 
+        if (subscriber != null) {
+            subscriber.onCompleted();
+        }
+
         return result;
     }
 

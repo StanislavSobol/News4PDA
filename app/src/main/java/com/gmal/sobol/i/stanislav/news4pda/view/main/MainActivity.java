@@ -17,7 +17,6 @@ import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.R;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
-import com.gmal.sobol.i.stanislav.news4pda.parser.Parser4PDAViewable_old;
 import com.gmal.sobol.i.stanislav.news4pda.presenter.PresenterUser;
 import com.gmal.sobol.i.stanislav.news4pda.presenter.main.MainActivityPresenter;
 import com.gmal.sobol.i.stanislav.news4pda.presenter.main.MainActivityPresenterForActivity;
@@ -39,10 +38,6 @@ public class MainActivity extends BaseActivity
     @Bind(R.id.recyclerProgressBar)
     ProgressBar recyclerProgressBar;
 
-    private Parser4PDAViewable_old parser4PDA = MApplication.getParser4PDA();
-    private int currentPageNumber = 0; // begins from 1
-    private int loadingPageNum;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         MApplication.getInstance().createComponents(true);
@@ -53,12 +48,6 @@ public class MainActivity extends BaseActivity
         initGraphics();
 
         loadPage(1, !realStart);
-
-//        if (realStart) {
-////            getCastedPresenter().setMediatorMember();
-////            startService(new Intent(this, CheckNewService.class));
-////            GAManager.sendApplicationStartAction();
-//        }
     }
 
     @Override
@@ -95,9 +84,7 @@ public class MainActivity extends BaseActivity
     }
 
     void checkForNextPage(int position) {
-        if (position + 1 >= parser4PDA.getParsedNewsData().size()) {
-            loadPage(currentPageNumber + 1, false);
-        }
+        getCastedPresenter().loadNewDataPartIfNeeded(position);
     }
 
     void showDetailedNew(ItemDTO item) {
@@ -138,9 +125,7 @@ public class MainActivity extends BaseActivity
 
     private void loadPage(final int number, boolean fromCache) {
         setTitleOnlineStatus();
-
         MApplication.isOnlineWithToast(true);
-        loadingPageNum = number;
         getCastedPresenter().loadPage(number, fromCache);
     }
 
@@ -157,12 +142,10 @@ public class MainActivity extends BaseActivity
     @Override
     public void buildPage(List<ItemDTO> itemsDTO, boolean fromCache) {
         Logger.write("MainActivity::buildPage");
-        currentPageNumber++;
     }
 
     @Override
     public void addItem(ItemDTO itemDTO) {
-        Logger.write("MainActivity::addItem");
         fullProgressBar.setVisibility(View.GONE);
         getRecyclerViewAdapter().addItem(itemDTO);
     }

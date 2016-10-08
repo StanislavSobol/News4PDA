@@ -1,5 +1,6 @@
 package com.gmal.sobol.i.stanislav.news4pda.presenter.main;
 
+import com.gmal.sobol.i.stanislav.news4pda.Logger;
 import com.gmal.sobol.i.stanislav.news4pda.MApplication;
 import com.gmal.sobol.i.stanislav.news4pda.data.DataProviderPresentable;
 import com.gmal.sobol.i.stanislav.news4pda.dto.ItemDTO;
@@ -28,7 +29,8 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
     private List<ItemDTO> itemsDTO = new ArrayList<>();
 
     private boolean loadingIsLocked;
-    private int pageNum;
+    private int currentPageNumber = 0;
+
 
     @Override
     protected void dagger2Inject() {
@@ -49,17 +51,20 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
         loadingIsLocked = true;
 
         if (fromCache) {
+            for (ItemDTO itemDTO : itemsDTO) {
+                getCastedView().addItem(itemDTO);
+            }
             getCastedView().buildPage(itemsDTO, true);
             loadingIsLocked = false;
         } else {
-            if (pageNum == 1) {
+            if (currentPageNumber == 0) {
                 itemsDTO.clear();
             }
 
             final Observable<ItemDTO> observable = Observable.create(new Observable.OnSubscribe<ItemDTO>() {
                 @Override
                 public void call(Subscriber<? super ItemDTO> subscriber) {
-                    dataProviderPresentable.getPageData(pageNum, MApplication.isOnlineWithToast(false), subscriber);
+                    dataProviderPresentable.getPageData(currentPageNumber, MApplication.isOnlineWithToast(false), subscriber);
                 }
             });
 
@@ -70,11 +75,14 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
                     .subscribe(new Observer<ItemDTO>() {
                         @Override
                         public void onCompleted() {
+                            Logger.write("onCompleted()");
+
                             getCastedView().buildPage(itemsDTO, false);
                             if (MApplication.isOnlineWithToast(false)) {
                                 dataProviderPresentable.writeItemsDTO(itemsDTO);
                             }
                             loadingIsLocked = false;
+                            currentPageNumber++;
                         }
 
                         @Override
@@ -85,11 +93,18 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
 
                         @Override
                         public void onNext(ItemDTO itemDTO) {
-                            itemDTO.setPageNum(pageNum);
+                            itemDTO.setPageNum(currentPageNumber);
                             itemsDTO.add(itemDTO);
                             getCastedView().addItem(itemDTO);
                         }
                     });
+        }
+    }
+
+    @Override
+    public void loadNewDataPartIfNeeded(int position) {
+        if (position + 1 >= itemsDTO.size()) {
+            loadPage(currentPageNumber + 1, false);
         }
     }
 }
