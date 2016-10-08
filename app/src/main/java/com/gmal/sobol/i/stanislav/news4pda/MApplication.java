@@ -27,9 +27,7 @@ public class MApplication extends android.app.Application {
     @Getter
     private static MApplication instance;
     private RealComponents dagger2RealComponents;
-    private boolean mainActivityIsAlive;
     private SQLORMManager sqlLiteQRMManager;
-
 
     public static boolean isOnlineWithToast(boolean showToastIfNoInet) {
         ConnectivityManager cm =
@@ -82,29 +80,13 @@ public class MApplication extends android.app.Application {
         return sqlLiteQRMManager;
     }
 
-    public void createComponents(boolean callFromMainActivity) {
-        if (callFromMainActivity || !mainActivityIsAlive) {
-            dagger2RealComponents = DaggerRealComponents.builder().mApplication(this).build();
-            sqlLiteQRMManager = new SQLORMManager();
-        }
-
-        if (callFromMainActivity) {
-            mainActivityIsAlive = true;
-        }
+    public void createComponents() {
+        dagger2RealComponents = DaggerRealComponents.builder().mApplication(this).build();
+        sqlLiteQRMManager = new SQLORMManager();
     }
 
-    public void releaseComponents(boolean callFromMainActivity) {
-        if (callFromMainActivity || !mainActivityIsAlive) {
-            dagger2RealComponents = null;
-//            if (sqlLiteQRMManager != null && sqlLiteQRMManager.isOpen()) {
-//                sqlLiteQRMManager.close();
-//            }
-        }
-
-        if (callFromMainActivity) {
-            mainActivityIsAlive = false;
-        }
+    public void releaseComponents() {
+        sqlLiteQRMManager.close();
+        dagger2RealComponents = null;
     }
-
-
 }

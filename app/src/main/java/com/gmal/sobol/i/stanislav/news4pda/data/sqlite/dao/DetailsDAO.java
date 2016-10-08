@@ -15,7 +15,7 @@ import java.util.List;
 
 public class DetailsDAO extends BaseDaoImpl<DetailsMainDTO, Object> {
 
-    private DetailsItemsDAO detailsItemsDAO;// = new DetailsItemsDAO(DetailsItemDTO.class);
+    private DetailsItemsDAO detailsItemsDAO;
 
     public DetailsDAO(ConnectionSource connectionSource, Class<DetailsMainDTO> dataClass) throws SQLException {
         super(connectionSource, dataClass);

@@ -27,7 +27,7 @@ public class BaseParser implements New4PDAParser {
     public List<ItemDTO> getPageData(int pageNum, Subscriber<? super ItemDTO> subscriber) {
         final List<ItemDTO> result = new ArrayList<>();
         try {
-            final Document document = Jsoup.connect(URL).get();
+            final Document document = Jsoup.connect(URL + pageNum).get();
             final Elements articles = document.getElementsByTag("article");
             for (Element article : articles) {
                 if (!article.className().equals("post")) {
@@ -40,6 +40,8 @@ public class BaseParser implements New4PDAParser {
                 item.setDetailURL(article.getElementsByTag("a").get(0).attr("href"));
                 item.setDescription(article.getElementsByTag("p").get(0).text());
                 item.setImageURL(article.getElementsByTag("img").get(0).attr("src"));
+
+                item.setPageNum(pageNum);
 
                 result.add(item);
 

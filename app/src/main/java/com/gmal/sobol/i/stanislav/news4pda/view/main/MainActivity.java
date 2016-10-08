@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MApplication.getInstance().createComponents(true);
+        MApplication.getInstance().createComponents();
         final boolean realStart = isRealStart();
 
         super.onCreate(savedInstanceState);
@@ -48,6 +48,14 @@ public class MainActivity extends BaseActivity
         initGraphics();
 
         loadPage(1, !realStart);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!isChangingConfigurations()) {
+            MApplication.getInstance().releaseComponents();
+        }
+        super.onDestroy();
     }
 
     @Override

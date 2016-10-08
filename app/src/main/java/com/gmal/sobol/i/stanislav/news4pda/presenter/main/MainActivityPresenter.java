@@ -43,7 +43,7 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
     }
 
     @Override
-    public void loadPage(int number, boolean fromCache) {
+    public void loadPage(final int number, boolean fromCache) {
         if (loadingIsLocked) {
             return;
         }
@@ -57,14 +57,14 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
             getCastedView().buildPage(itemsDTO, true);
             loadingIsLocked = false;
         } else {
-            if (currentPageNumber == 0) {
+            if (number == 1) {
                 itemsDTO.clear();
             }
 
             final Observable<ItemDTO> observable = Observable.create(new Observable.OnSubscribe<ItemDTO>() {
                 @Override
                 public void call(Subscriber<? super ItemDTO> subscriber) {
-                    dataProviderPresentable.getPageData(currentPageNumber, MApplication.isOnlineWithToast(false), subscriber);
+                    dataProviderPresentable.getPageData(number, MApplication.isOnlineWithToast(false), subscriber);
                 }
             });
 
@@ -80,7 +80,7 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
                             getCastedView().buildPage(itemsDTO, false);
                             dataProviderPresentable.writeItemsDTO(itemsDTO);
                             loadingIsLocked = false;
-                            currentPageNumber++;
+                            currentPageNumber = number;
                         }
 
                         @Override
@@ -91,7 +91,7 @@ public class MainActivityPresenter extends BasePresenter implements MainActivity
 
                         @Override
                         public void onNext(ItemDTO itemDTO) {
-                            itemDTO.setPageNum(currentPageNumber);
+//                            itemDTO.setPageNum(currentPageNumber);
                             itemsDTO.add(itemDTO);
                             getCastedView().addItem(itemDTO);
                         }

@@ -47,7 +47,7 @@ class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
 
         if (item != null) {
 
-            holder.titleTextVew.setText(item.getTitle());
+            holder.titleTextVew.setText("Page: " + item.getPageNum() + "  " + item.getTitle());
             holder.descriptionTextView.setText(item.getDescription());
 
             if (!item.getImageURL().isEmpty()) {
