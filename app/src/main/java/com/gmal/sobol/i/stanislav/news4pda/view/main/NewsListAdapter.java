@@ -77,18 +77,6 @@ class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.Holder> {
         return items.size();
     }
 
-//    boolean addNews(NewsDTO_old srcData) {
-//        if (srcData.size() > items.size()) {
-//            int left = items.size();
-//            for (int i = left; i < srcData.size(); i++) {
-//                items.add(srcData.get(i));
-//            }
-//            notifyDataSetChanged();
-//            return true;
-//        }
-//        return false;
-//    }
-
     static class Holder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.titleTextVew)

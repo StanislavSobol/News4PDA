@@ -96,22 +96,22 @@ public class MainActivity extends BaseActivity
     }
 
     void showDetailedNew(ItemDTO item) {
-        Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
+        final Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
         intent.putExtra("url", item.getDetailURL());
         startActivity(intent);
     }
 
     private void initGraphics() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         navigationView.setVisibility(View.GONE);
@@ -119,7 +119,6 @@ public class MainActivity extends BaseActivity
         ButterKnife.bind(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new NewsListAdapter(this));
-
     }
 
     private void setTitleOnlineStatus() {
